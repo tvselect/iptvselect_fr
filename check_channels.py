@@ -1,0 +1,344 @@
+import subprocess
+import argparse
+import time
+from datetime import datetime
+
+parser = argparse.ArgumentParser()
+parser.add_argument("iptv_provider")
+
+args = parser.parse_args()
+
+cmd = "ls ~/videos_select | grep ^videos_tests$"
+output = subprocess.Popen(
+    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+)
+stdout, stderr = output.communicate()
+ls_directory = stdout.decode("utf-8")[:-1]
+
+if ls_directory == "":
+    cmd = "mkdir -p ~/videos_select/videos_tests"
+    directory = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    )
+    directory.wait()
+    print(
+        "\nLe dossier videos_select/videos_tests a été créé dans votre dossier home.\n"
+    )
+
+if args.iptv_provider[-5:] == "_junk":
+    iptv_provider = args.iptv_provider[:-5]
+else:
+    iptv_provider = args.iptv_provider
+
+cmd = "ls iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
+    iptv_provider=iptv_provider
+)
+output = subprocess.Popen(
+    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+)
+stdout, stderr = output.communicate()
+provider = stdout.decode("utf-8")[15:-1]
+
+if provider != iptv_provider + "_original_m3ulinks.ini":
+    print(
+        "Le fournisseur {iptv_provider} que vous avez renseigné ne possède "
+        "pas de fichier nommé {iptv_provider}_original_m3ulinks.ini ."
+        "Veuillez créer ce fichier soit en exécutant les scripts fill_ini.py ou "
+        "install_iptv.py ou alors en copiant le fichier {iptv_provider}.ini "
+        "en le renommant {iptv_provider}_original_"
+        "m3ulinks.ini ".format(iptv_provider=iptv_provider)
+    )
+    exit()
+
+answers_apps = [1, 2, 3]
+provider_recorder = 4
+
+while provider_recorder not in answers_apps:
+    try:
+        provider_recorder = int(
+            input(
+                "\nQuelle application souhaitez-vous utiliser pour "
+                "enregistrer les vidéos de ce fournisseur d'IPTV? (vous pouvez utiliser "
+                "le programme recorder_test.py pour tester la meilleur application). \n\n"
+                "1) VLC\n2) Mplayer\n3) Streamlink\n"
+                "Sélectionnez 1, 2 ou 3\n"
+            )
+        )
+    except ValueError:
+        print("Vous devez sélectionner entre 1 et 3")
+
+
+with open(
+    "iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
+        iptv_provider=iptv_provider
+    ),
+    "r",
+) as ini:
+    first_line = ini.readline()
+    lines = ini.read().splitlines()
+
+cmd = "ls iptv_providers/{iptv_provider}_junk.ini".format(iptv_provider=iptv_provider)
+output = subprocess.Popen(
+    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+)
+stdout, stderr = output.communicate()
+junk = stdout.decode("utf-8")[15:-1]
+
+if junk == iptv_provider + "_junk.ini":
+    cmd = (
+        "cp iptv_providers/{iptv_provider}_junk.ini "
+        "iptv_providers/{iptv_provider}_junk_last.ini".format(
+            iptv_provider=iptv_provider
+        )
+    )
+    cp_junk = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    )
+    cp_junk.wait()
+else:
+    cmd = "touch iptv_providers/{iptv_provider}_junk.ini".format(
+        iptv_provider=iptv_provider
+    )
+    output = subprocess.Popen(
+        cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    )
+    output.wait()
+
+check_junk = False
+
+if args.iptv_provider[-5:] == "_junk":
+    with open(
+        "iptv_providers/{iptv_provider}_junk.ini".format(iptv_provider=iptv_provider),
+        "r",
+    ) as ini:
+        first_line = ini.readline()
+        junks_to_check = ini.read().splitlines()
+    check_junk = True
+
+if check_junk:
+    lines_to_check = junks_to_check
+    file_to_check = "junk"
+else:
+    lines_to_check = lines
+    file_to_check = "original_m3ulinks"
+
+junkies = []
+junkies_line = []
+
+record_time = 60
+number_m3u_links = 0
+
+for line in lines_to_check:
+    if line != "" and line[-3:] != " = ":
+        number_m3u_links += 1
+
+print(
+    "Le programme de contrôle des chaines a démarré. Il "
+    "y a {number_m3u_links} chaînes à vérifier dans le fichier "
+    "{iptv_provider}_{file_to_check}.ini . Il faudra donc patienter "
+    "environ {minutes} minutes.\n".format(
+        number_m3u_links=number_m3u_links,
+        iptv_provider=iptv_provider,
+        file_to_check=file_to_check,
+        minutes=round((number_m3u_links * record_time) / 60),
+    )
+)
+
+for line in lines_to_check:
+    if " = " in line:
+        now = datetime.now().strftime("%Y-%m-%d-%H-%M")
+        split = line.split(" = ")
+        if split[1] != "":
+            channel_formated = split[0].replace(" ", "_")
+            channel_formated = channel_formated.replace("'", "_")
+            if provider_recorder == 1:
+                cmd = (
+                    "cvlc -v {m3u8_link} --sout=file/ts:/home/$USER/videos_select/videos_tests"
+                    "/{iptv_provider}_{now}_{channel}.ts >> /home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}_test.log "
+                    "2>&1".format(
+                        m3u8_link=split[1],
+                        channel=channel_formated,
+                        iptv_provider=iptv_provider,
+                        now=now,
+                    )
+                )
+            elif provider_recorder == 2:
+                cmd = (
+                    "mplayer {m3u8_link} -dumpstream -dumpfile "
+                    "/home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}.ts >> "
+                    "/home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}_"
+                    "test.log 2>&1".format(
+                        m3u8_link=split[1],
+                        channel=channel_formated,
+                        iptv_provider=iptv_provider,
+                        now=now,
+                    )
+                )
+            else:
+                cmd = (
+                    "streamlink --http-no-ssl-verify --hls-live-restart "
+                    "--hls-segment-threads 10 --hls-segment-timeout 10 "
+                    "--stream-segment-attempts 100 --retry-streams 1 "
+                    "--retry-max 100 --hls-duration 00:60 -o "
+                    "/home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}.ts "
+                    "-f {m3u8_link} best >> "
+                    "/home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}_test.log"
+                    " 2>&1".format(
+                        m3u8_link=split[1],
+                        channel=channel_formated,
+                        iptv_provider=iptv_provider,
+                        now=now,
+                    )
+                )
+
+            record = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+            )
+
+            time.sleep(record_time)
+
+            if provider_recorder < 3:
+                cmd = (
+                    "ps -ef | grep {iptv_provider}_{now}_{channel}.ts | tr -s ' ' | "
+                    "cut -d ' ' -f2 | "
+                    "head -n 2".format(
+                        channel=channel_formated,
+                        iptv_provider=iptv_provider,
+                        now=now,
+                    )
+                )
+                stdout = subprocess.check_output(cmd, shell=True)
+                pid = int(stdout.decode("utf-8").split("\n")[:-1][1])
+                cmd = "kill {pid}".format(pid=pid)
+                kill = subprocess.Popen(
+                    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+                )
+
+            cmd = (
+                "du /home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}.ts | cut -f1"
+            ).format(
+                channel=channel_formated,
+                iptv_provider=iptv_provider,
+                now=now,
+            )
+            du_cmd = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+            )
+            stdout, stderr = du_cmd.communicate()
+
+            try:
+                stdout_utf = stdout.decode("utf-8")[:-1]
+                file_size = int(stdout_utf)
+            except ValueError:
+                print(
+                    "La chaine {channel} n'a pas pu être contrôlée".format(
+                        channel=split[0]
+                    )
+                )
+                file_size = 10
+
+            if file_size < 1000:
+                print(
+                    "La chaine {channel} n'a pas été enregistrée!!!!!!".format(
+                        channel=split[0]
+                    )
+                )
+                junkies.append((split[0], split[1]))
+                junkies_line.append(split[0] + " = " + split[1])
+            else:
+                print(
+                    "La chaine {channel} a pu être enregistrée.".format(
+                        channel=split[0]
+                    )
+                )
+
+with open("iptv_providers/" + iptv_provider + "_junk.ini", "w") as ini:
+    ini.write("[CHANNELS]" + "\n")
+    for line in junkies_line:
+        ini.write(line + "\n")
+
+if len(junkies) > 0:
+    print(
+        "\nLes chaînes qui ne fonctionnent pas par rapport au fichier original de liens m3u sont:\n"
+    )
+    for junk in junkies:
+        print(junk[0])
+
+cmd = "ls iptv_providers/{iptv_provider}_junk_last.ini".format(
+    iptv_provider=iptv_provider
+)
+output = subprocess.Popen(
+    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+)
+stdout, stderr = output.communicate()
+file_junk = stdout.decode("utf-8")[15:-1]
+
+if file_junk == "{iptv_provider}_junk_last.ini".format(iptv_provider=iptv_provider):
+    with open(
+        "iptv_providers/{iptv_provider}_junk_last.ini".format(
+            iptv_provider=iptv_provider
+        ),
+        "r",
+    ) as ini:
+        first_line = ini.readline()
+        last_junks = ini.read().splitlines()
+
+    repaired = []
+
+    for junk in last_junks:
+        if junk not in junkies_line:
+            split = junk.split(" = ")
+            repaired.append(split[0])
+
+    if len(repaired) > 0:
+        print(
+            "\nLes chaînes qui sont de nouveau fonctionnelles depuis le dernier "
+            "contrôle des chaines du fournisseur d'IPTV "
+            "{iptv_provider} sont:\n\n".format(iptv_provider=iptv_provider)
+        )
+        for repair in repaired:
+            print(repair)
+    else:
+        print(
+            "\nAucune chaine n'a été réparée depuis le dernier "
+            "contrôle des chaines du fournisseur d'IPTV "
+            "{iptv_provider}.".format(iptv_provider=iptv_provider)
+        )
+
+    new_junk = []
+
+    for junk in junkies_line:
+        if junk not in last_junks:
+            new_junk.append(junk)
+
+    if check_junk is False:
+        if len(new_junk) > 0:
+            print(
+                "\nLes chaînes qui ne sont plus fonctionnelles depuis le dernier "
+                "contrôle des chaines du fournisseur d'IPTV "
+                "{iptv_provider} sont:\n\n".format(iptv_provider=iptv_provider)
+            )
+            for junk in new_junk:
+                junk_split = junk.split(" = ")
+                print(junk_split[0])
+        else:
+            print(
+                "\nAucune nouvelle chaine apparait comme endommagée "
+                "depuis le dernier contrôle des chaines du fournisseur d'IPTV "
+                "{iptv_provider}.".format(iptv_provider=iptv_provider)
+            )
+
+with open("iptv_providers/" + iptv_provider + ".ini", "w") as ini:
+    ini.write("[CHANNELS]" + "\n")
+    for line in lines:
+        if line not in junkies_line:
+            ini.write(line + "\n")
+        else:
+            split = line.split(" = ")
+            ini.write(split[0] + " = \n")
+
+if check_junk is False and len(junkies_line) > 0 or check_junk and len(repaired) > 0:
+    print(
+        "\nLe fichier {iptv_provider}.ini vient "
+        "d'être reconfiguré.".format(iptv_provider=iptv_provider)
+    )
