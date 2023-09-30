@@ -1,5 +1,6 @@
 import re
 import subprocess
+import readline
 from configparser import ConfigParser
 
 from fill_ini import channels, search_url

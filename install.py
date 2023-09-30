@@ -1,4 +1,5 @@
 import subprocess
+import readline
 import random
 import getpass
 

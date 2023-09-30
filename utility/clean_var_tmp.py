@@ -1,4 +1,5 @@
 import subprocess
+import readline
 
 """Script to remove files in /var/tmp directory"""
 

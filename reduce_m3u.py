@@ -1,4 +1,5 @@
 import subprocess
+import readline
 
 m3u_file = "123456"
 ls_result = "abcdef"

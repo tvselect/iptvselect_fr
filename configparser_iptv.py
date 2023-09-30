@@ -1,4 +1,5 @@
 import subprocess
+import readline
 from configparser import ConfigParser
 
 config_object = ConfigParser()
@@ -42,7 +43,7 @@ if answer.lower() == "non":
 record_ranking = ["première", "deuxième", "troisième", "quatrième"]
 provider_rank = 0
 answers_apps = [1, 2, 3]
-recorders = ["vlc", "streamlink", "mplayer"]
+recorders = ["vlc", "mplayer", "streamlink"]
 provider_recorder = 4
 backup_recorder = 4
 
@@ -92,7 +93,7 @@ while True:
                     "\nQuelle application souhaitez-vous utiliser pour "
                     "enregistrer les vidéos de ce fournisseur d'IPTV? (vous pouvez utiliser "
                     "le programme recorder_test.py pour tester la meilleur application). \n"
-                    "1) VLC\n2) Streamlink\n3) Mplayer\n"
+                    "1) VLC\n2) Mplayer\n3) Streamlink\n"
                     "Sélectionnez 1, 2 ou 3\n"
                 )
             )
@@ -157,7 +158,7 @@ while True:
                         "\nQuelle application souhaitez-vous utiliser pour "
                         "enregistrer les vidéos de ce fournisseur d'IPTV? (vous pouvez utiliser "
                         "le programme recorder_test.py pour tester la meilleur application). \n"
-                        "1) VLC\n2) Streamlink\n3) Mplayer\n"
+                        "1) VLC\n2) Mplayer\n3) Streamlink\n"
                         "Sélectionnez 1, 2 ou 3\n"
                     )
                 )
@@ -233,7 +234,7 @@ while True:
                         "\nQuelle application souhaitez-vous utiliser pour "
                         "enregistrer les vidéos de ce fournisseur d'IPTV? (vous pouvez utiliser "
                         "le programme recorder_test.py pour tester la meilleur application). \n"
-                        "1) VLC\n2) Streamlink\n3) Mplayer\n"
+                        "1) VLC\n2) Mplayer\n3) Streamlink\n"
                         "Sélectionnez 1, 2 ou 3\n"
                     )
                 )

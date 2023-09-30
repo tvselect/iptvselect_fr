@@ -1,4 +1,5 @@
 import subprocess
+import readline
 import re
 from unidecode import unidecode
 
