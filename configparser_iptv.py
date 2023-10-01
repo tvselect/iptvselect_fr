@@ -42,10 +42,10 @@ if answer.lower() == "non":
 
 record_ranking = ["première", "deuxième", "troisième", "quatrième"]
 provider_rank = 0
-answers_apps = [1, 2, 3]
-recorders = ["vlc", "mplayer", "streamlink"]
-provider_recorder = 4
-backup_recorder = 4
+answers_apps = [1, 2, 3, 4]
+recorders = ["ffmpeg", "vlc", "mplayer", "streamlink"]
+provider_recorder = 5
+backup_recorder = 5
 
 while True:
     while True:
@@ -93,12 +93,12 @@ while True:
                     "\nQuelle application souhaitez-vous utiliser pour "
                     "enregistrer les vidéos de ce fournisseur d'IPTV? (vous pouvez utiliser "
                     "le programme recorder_test.py pour tester la meilleur application). \n"
-                    "1) VLC\n2) Mplayer\n3) Streamlink\n"
-                    "Sélectionnez 1, 2 ou 3\n"
+                    "1) FFmpeg \n2) VLC\n3) Mplayer\n4) Streamlink\n"
+                    "Sélectionnez 1, 2, 3 ou 4\n"
                 )
             )
         except ValueError:
-            print("Vous devez sélectionner entre 1 et 3")
+            print("Vous devez sélectionner entre 1 et 4")
 
     backup_answer = "maybe"
 
@@ -137,7 +137,7 @@ while True:
             print(
                 "Le fournisseur d'IPTV que vous avez renseigné pour la sauvegarde "
                 "ne correspond pas à un fichier de configuration se terminant "
-                "pas .ini dans le dossier iptv_providers."
+                "par .ini dans le dossier iptv_providers."
             )
             continue_config = "maybe"
             while continue_config.lower() not in answers:
@@ -158,16 +158,16 @@ while True:
                         "\nQuelle application souhaitez-vous utiliser pour "
                         "enregistrer les vidéos de ce fournisseur d'IPTV? (vous pouvez utiliser "
                         "le programme recorder_test.py pour tester la meilleur application). \n"
-                        "1) VLC\n2) Mplayer\n3) Streamlink\n"
-                        "Sélectionnez 1, 2 ou 3\n"
+                        "1) FFmpeg \n2) VLC\n3) Mplayer\n4) Streamlink\n"
+                        "Sélectionnez 1, 2, 3 ou 4\n"
                     )
                 )
                 try:
                     backup_recorder_string = recorders[backup_recorder - 1]
                 except IndexError:
-                    print("Vous devez sélectionner un chiffre entre 1 et 3")
+                    print("Vous devez sélectionner un chiffre entre 1 et 4")
             except ValueError:
-                print("Vous devez sélectionner un chiffre entre 1 et 3")
+                print("Vous devez sélectionner un chiffre entre 1 et 4")
         break
 
     backup_2_answer = "maybe"
@@ -225,7 +225,7 @@ while True:
             else:
                 continue
 
-        backup_recorder = 4
+        backup_recorder = 5
 
         while backup_recorder not in answers_apps:
             try:
@@ -234,19 +234,19 @@ while True:
                         "\nQuelle application souhaitez-vous utiliser pour "
                         "enregistrer les vidéos de ce fournisseur d'IPTV? (vous pouvez utiliser "
                         "le programme recorder_test.py pour tester la meilleur application). \n"
-                        "1) VLC\n2) Mplayer\n3) Streamlink\n"
-                        "Sélectionnez 1, 2 ou 3\n"
+                        "1) FFmpeg \n2) VLC\n3) Mplayer\n4) Streamlink\n"
+                        "Sélectionnez 1, 2, 3 ou 4\n"
                     )
                 )
                 try:
                     backup_2_recorder_string = recorders[backup_recorder - 1]
                 except IndexError:
-                    print("Vous devez sélectionner un chiffre entre 1 et 3")
+                    print("Vous devez sélectionner un chiffre entre 1 et 4")
             except ValueError:
-                print("Vous devez sélectionner un chiffre entre 1 et 3")
+                print("Vous devez sélectionner un chiffre entre 1 et 4")
         break
 
-    backup_recorder = 4
+    backup_recorder = 5
 
     provider_rank += 1
 
@@ -259,7 +259,7 @@ while True:
         "backup_2_recorder": backup_2_recorder_string,
     }
 
-    provider_recorder = 4
+    provider_recorder = 5
 
     if provider_rank < 4:
         answer = "maybe"

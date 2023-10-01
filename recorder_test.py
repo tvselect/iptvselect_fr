@@ -21,21 +21,21 @@ if ls_directory == "":
     directory.wait()
     print("Le dossier videos_select a été créé dans votre dossier home.\n")
 
-recorders = ["vlc", "mplayer", "streamlink"]
-answers = [1, 2, 3]
-recorder = 4
+recorders = ["ffmpeg", "vlc", "mplayer", "streamlink"]
+answers = [1, 2, 3, 4]
+recorder = 5
 
 while recorder not in answers:
     try:
         recorder = int(
             input(
                 "Quelle application souhaitez-vous tester?\n\n"
-                "1) VLC\n2) Mplayer\n3) Streamlink\n"
-                "Sélectionnez 1, 2 ou 3\n"
+                "1) FFmpeg\n2) VLC\n3) Mplayer\n4) Streamlink\n"
+                "Sélectionnez entre 1 et 4\n"
             )
         )
     except ValueError:
-        print("Vous devez sélectionner entre 1 et 3")
+        print("Vous devez sélectionner entre 1 et 4")
 
 iptv_provider = input(
     "\nQuel est le fournisseur d'IPTV pour lequel vous souhaitez "
@@ -92,10 +92,21 @@ title = input("\nQuel titre souhaitez-vous donner à votre vidéo de test?\n")
 
 if recorder == 1:
     cmd = (
-        "vlc -vvv {m3u8_link} --sout=file/ts:/home/$USER/videos_select/{title}_vlc.ts "
-        ">> /var/tmp/infos_vlc.log 2>&1".format(m3u8_link=m3u8_link, title=title)
+        "ffmpeg -y -i {m3u8_link} -c:v copy -c:a copy -t {duration} "
+        "-f mpegts -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 1"
+        " -reconnect_at_eof -y /home/$USER/videos_select/"
+        "{title}_ffmpeg.ts >> /var/tmp/infos_ffmpeg.ts 2>&1".format(
+            m3u8_link=m3u8_link, duration=duration, title=title
+        )
     )
 elif recorder == 2:
+    cmd = (
+        "vlc -vvv {m3u8_link} --run-time {duration} --sout=file/ts"
+        ":/home/$USER/videos_select/{title}_vlc.ts "
+        ">> /var/tmp/infos_vlc.log 2>&1".format(
+            m3u8_link=m3u8_link, duration=duration, title=title)
+    )
+elif recorder == 3:
     cmd = (
         "mplayer {m3u8_link} -dumpstream -dumpfile "
         "/home/$USER/videos_select/{title}_mplayer.ts >> "
@@ -129,7 +140,7 @@ test_record = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
 
-if recorder < 3:
+if recorder == 3:
     time.sleep(duration)
     cmd = "ps -ef | grep {title} | tr -s ' ' " "| cut -d ' ' -f2 | head -n 2".format(
         title=title
@@ -143,3 +154,5 @@ if recorder < 3:
     kill = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )
+    quit()
+

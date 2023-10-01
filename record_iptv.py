@@ -147,7 +147,19 @@ file_size = 0
 new_file_size = 1
 
 while date_now < end_video:
-    if args.recorder == "streamlink":
+    if args.recorder == "ffmpeg":
+        cmd = (
+            "ps aux | grep -c 'ffmpeg -i {m3u8_link} -c:v copy'".format(
+                m3u8_link=args.m3u8_link,
+            )
+        )
+        pid_record = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+        )
+        stdout, stderr = pid_record.communicate()
+        proc_count = stdout.decode("utf-8")[:-1]
+
+    elif args.recorder == "streamlink":
         cmd = (
             "ps aux | grep -c '{title}_{provider}_{record_position}"
             "_{save}.ts -f {m3u8_link}'".format(
@@ -250,6 +262,31 @@ while date_now < end_video:
 
         record_position += 1
 
+        if args.recorder == "ffmpeg":
+            cmd = (
+                "ffmpeg -i {m3u8_link} -c:v copy -c:a copy -t {left_time} "
+                "-f mpegts -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 1"
+                " -reconnect_at_eof -y /home/$USER/videos_select/"
+                "{title}-save/{title}_{provider}_{record_position}_{save}.ts"
+                " >> /var/tmp/infos_{title}_{provider}_{record_position}_{save}.log "
+                "2>&1".format(
+                    m3u8_link=args.m3u8_link,
+                    left_time=left_time,
+                    title=args.title,
+                    provider=args.provider,
+                    record_position=record_position,
+                    save=args.save,
+                )
+            )
+            record = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+            )
+
+            time.sleep(30)
+
+            start_or_kill()
+
+
         if args.recorder == "streamlink":
             cmd = (
                 "streamlink --http-no-ssl-verify --hls-live-restart "
@@ -296,11 +333,12 @@ while date_now < end_video:
             )
 
             cmd = (
-                "cvlc -v {m3u8_link} --sout=file/ts:/home/$USER/videos_select"
+                "cvlc -v --run-time={left_time} {m3u8_link} --sout=file/ts:/home/$USER/videos_select"
                 "/{title}-save/{title}_{provider}"
                 "_{record_position}_{save}.ts "
                 ">> /var/tmp/infos_{title}_{provider}"
                 "_{record_position}_{save}.log 2>&1".format(
+                    left_time=left_time,
                     m3u8_link=args.m3u8_link,
                     title=args.title,
                     provider=args.provider,

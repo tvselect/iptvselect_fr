@@ -50,8 +50,8 @@ if provider != iptv_provider + "_original_m3ulinks.ini":
     )
     exit()
 
-answers_apps = [1, 2, 3]
-provider_recorder = 4
+answers_apps = [1, 2, 3, 4]
+provider_recorder = 5
 
 while provider_recorder not in answers_apps:
     try:
@@ -60,12 +60,12 @@ while provider_recorder not in answers_apps:
                 "\nQuelle application souhaitez-vous utiliser pour "
                 "enregistrer les vidéos de ce fournisseur d'IPTV? (vous pouvez utiliser "
                 "le programme recorder_test.py pour tester la meilleur application). \n\n"
-                "1) VLC\n2) Mplayer\n3) Streamlink\n"
-                "Sélectionnez 1, 2 ou 3\n"
+                "1) FFmpeg\n2) VLC\n3) Mplayer\n4) Streamlink\n"
+                "Sélectionnez entre 1 et 4\n"
             )
         )
     except ValueError:
-        print("Vous devez sélectionner entre 1 et 3")
+        print("Vous devez sélectionner entre 1 et 4")
 
 
 with open(
@@ -153,9 +153,12 @@ for line in lines_to_check:
             channel_formated = channel_formated.replace("'", "_")
             if provider_recorder == 1:
                 cmd = (
-                    "cvlc -v {m3u8_link} --sout=file/ts:/home/$USER/videos_select/videos_tests"
-                    "/{iptv_provider}_{now}_{channel}.ts >> /home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}_test.log "
-                    "2>&1".format(
+                    "ffmpeg -y -i {m3u8_link} -c:v copy -c:a copy -t 60 "
+                    "-f mpegts -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 1"
+                    " -reconnect_at_eof -y /home/$USER/videos_select/videos_tests"
+                    "/{iptv_provider}_{now}_{channel}.ts >> /home/$USER/videos_select"
+                    "/videos_tests/{iptv_provider}_{now}_{channel}"
+                    "_test.log 2>&1".format(
                         m3u8_link=split[1],
                         channel=channel_formated,
                         iptv_provider=iptv_provider,
@@ -163,6 +166,18 @@ for line in lines_to_check:
                     )
                 )
             elif provider_recorder == 2:
+                cmd = (
+                    "cvlc -v {m3u8_link} --run-time 60 --sout=file/ts:/home/"
+                    "$USER/videos_select/videos_tests/{iptv_provider}_{now}"
+                    "_{channel}.ts >> /home/$USER/videos_select/videos_tests"
+                    "/{iptv_provider}_{now}_{channel}_test.log 2>&1".format(
+                        m3u8_link=split[1],
+                        channel=channel_formated,
+                        iptv_provider=iptv_provider,
+                        now=now,
+                    )
+                )
+            elif provider_recorder == 3:
                 cmd = (
                     "mplayer {m3u8_link} -dumpstream -dumpfile "
                     "/home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}.ts >> "
@@ -197,7 +212,7 @@ for line in lines_to_check:
 
             time.sleep(record_time)
 
-            if provider_recorder < 3:
+            if provider_recorder == 3:
                 cmd = (
                     "ps -ef | grep {iptv_provider}_{now}_{channel}.ts | tr -s ' ' | "
                     "cut -d ' ' -f2 | "
