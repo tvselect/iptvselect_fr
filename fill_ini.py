@@ -317,6 +317,13 @@ if __name__ == "__main__":
                         ):
                             info = link
                             match = True
+                        elif (
+                            chan_low[:8] == "france 3"
+                            and len(chan_low) > 8
+                            and chan_low.replace("france 3", "f3") in link_tvg[0]
+                        ):
+                            info = link
+                            match = True
 
         rank = 1
         rank_2 = 1
