@@ -1,7 +1,16 @@
 import subprocess
 import argparse
 import time
+import shlex
+import logging
 from datetime import datetime
+
+logging.basicConfig(
+    filename="/var/tmp/check_channels.log",
+    format="%(asctime)s %(levelname)s: %(message)s",
+    level=logging.INFO,
+    filemode="a",
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("iptv_provider")
@@ -31,13 +40,15 @@ else:
     iptv_provider = args.iptv_provider
 
 cmd = "ls iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
-    iptv_provider=iptv_provider
+    iptv_provider=shlex.quote(iptv_provider)
 )
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
 stdout, stderr = output.communicate()
 provider = stdout.decode("utf-8")[15:-1]
+if stderr.decode("utf-8")[:-1] != "":
+    logging.error(f"Command '{cmd}' failed with error: {stderr.decode('utf-8')}")
 
 if provider != iptv_provider + "_original_m3ulinks.ini":
     print(
@@ -77,18 +88,22 @@ with open(
     first_line = ini.readline()
     lines = ini.read().splitlines()
 
-cmd = "ls iptv_providers/{iptv_provider}_junk.ini".format(iptv_provider=iptv_provider)
+cmd = "ls iptv_providers/{iptv_provider}_junk.ini".format(
+    iptv_provider=shlex.quote(iptv_provider)
+)
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
 stdout, stderr = output.communicate()
 junk = stdout.decode("utf-8")[15:-1]
+if stderr.decode("utf-8")[:-1] != "":
+    logging.error(f"Command '{cmd}' failed with error: {stderr.decode('utf-8')}")
 
 if junk == iptv_provider + "_junk.ini":
     cmd = (
         "cp iptv_providers/{iptv_provider}_junk.ini "
         "iptv_providers/{iptv_provider}_junk_last.ini".format(
-            iptv_provider=iptv_provider
+            iptv_provider=shlex.quote(iptv_provider)
         )
     )
     cp_junk = subprocess.Popen(
@@ -97,7 +112,7 @@ if junk == iptv_provider + "_junk.ini":
     cp_junk.wait()
 else:
     cmd = "touch iptv_providers/{iptv_provider}_junk.ini".format(
-        iptv_provider=iptv_provider
+        iptv_provider=shlex.quote(iptv_provider)
     )
     output = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -159,9 +174,9 @@ for line in lines_to_check:
                     "/{iptv_provider}_{now}_{channel}.ts >> /home/$USER/videos_select"
                     "/videos_tests/{iptv_provider}_{now}_{channel}"
                     "_test.log 2>&1".format(
-                        m3u8_link=split[1],
-                        channel=channel_formated,
-                        iptv_provider=iptv_provider,
+                        m3u8_link=shlex.quote(split[1]),
+                        channel=shlex.quote(channel_formated),
+                        iptv_provider=shlex.quote(iptv_provider),
                         now=now,
                     )
                 )
@@ -171,9 +186,9 @@ for line in lines_to_check:
                     "$USER/videos_select/videos_tests/{iptv_provider}_{now}"
                     "_{channel}.ts >> /home/$USER/videos_select/videos_tests"
                     "/{iptv_provider}_{now}_{channel}_test.log 2>&1".format(
-                        m3u8_link=split[1],
-                        channel=channel_formated,
-                        iptv_provider=iptv_provider,
+                        m3u8_link=shlex.quote(split[1]),
+                        channel=shlex.quote(channel_formated),
+                        iptv_provider=shlex.quote(iptv_provider),
                         now=now,
                     )
                 )
@@ -183,9 +198,9 @@ for line in lines_to_check:
                     "/home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}.ts >> "
                     "/home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}_"
                     "test.log 2>&1".format(
-                        m3u8_link=split[1],
-                        channel=channel_formated,
-                        iptv_provider=iptv_provider,
+                        m3u8_link=shlex.quote(split[1]),
+                        channel=shlex.quote(channel_formated),
+                        iptv_provider=shlex.quote(iptv_provider),
                         now=now,
                     )
                 )
@@ -199,9 +214,9 @@ for line in lines_to_check:
                     "-f {m3u8_link} best >> "
                     "/home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}_test.log"
                     " 2>&1".format(
-                        m3u8_link=split[1],
-                        channel=channel_formated,
-                        iptv_provider=iptv_provider,
+                        m3u8_link=shlex.quote(split[1]),
+                        channel=shlex.quote(channel_formated),
+                        iptv_provider=shlex.quote(iptv_provider),
                         now=now,
                     )
                 )
@@ -217,8 +232,8 @@ for line in lines_to_check:
                     "ps -ef | grep {iptv_provider}_{now}_{channel}.ts | tr -s ' ' | "
                     "cut -d ' ' -f2 | "
                     "head -n 2".format(
-                        channel=channel_formated,
-                        iptv_provider=iptv_provider,
+                        channel=shlex.quote(channel_formated),
+                        iptv_provider=shlex.quote(iptv_provider),
                         now=now,
                     )
                 )
@@ -232,8 +247,8 @@ for line in lines_to_check:
             cmd = (
                 "du /home/$USER/videos_select/videos_tests/{iptv_provider}_{now}_{channel}.ts | cut -f1"
             ).format(
-                channel=channel_formated,
-                iptv_provider=iptv_provider,
+                channel=shlex.quote(channel_formated),
+                iptv_provider=shlex.quote(iptv_provider),
                 now=now,
             )
             du_cmd = subprocess.Popen(
@@ -244,6 +259,10 @@ for line in lines_to_check:
             try:
                 stdout_utf = stdout.decode("utf-8")[:-1]
                 file_size = int(stdout_utf)
+                if stderr.decode("utf-8")[:-1] != "":
+                    logging.error(
+                        f"Command '{cmd}' failed with error: {stderr.decode('utf-8')}"
+                    )
             except ValueError:
                 print(
                     "La chaine {channel} n'a pas pu être contrôlée".format(
@@ -280,7 +299,7 @@ if len(junkies) > 0:
         print(junk[0])
 
 cmd = "ls iptv_providers/{iptv_provider}_junk_last.ini".format(
-    iptv_provider=iptv_provider
+    iptv_provider=shlex.quote(iptv_provider),
 )
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True

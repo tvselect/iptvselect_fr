@@ -1,6 +1,7 @@
 import subprocess
 import readline
 import re
+import shlex
 from unidecode import unidecode
 
 channels = [
@@ -102,7 +103,7 @@ if __name__ == "__main__":
 
     cmd = (
         "cp iptv_providers/iptv_select_channels.ini iptv_providers/"
-        "{provider}.ini".format(provider=iptv_provider)
+        "{provider}.ini".format(provider=shlex.quote(iptv_provider))
     )
     cp_ini = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -122,7 +123,7 @@ if __name__ == "__main__":
             "fournisseur d'IPTV? (renseignez le nom "
             "sans l'extension .m3u): "
         )
-        cmd = "ls iptv_providers/{m3u_file}.m3u".format(m3u_file=m3u_file)
+        cmd = "ls iptv_providers/{m3u_file}.m3u".format(m3u_file=shlex.quote(m3u_file))
         output = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )
@@ -411,7 +412,9 @@ if __name__ == "__main__":
                 ini.write(line)
         cmd = (
             "cp iptv_providers/{iptv_provider}.ini iptv_providers/"
-            "{iptv_provider}_original_m3ulinks.ini".format(iptv_provider=iptv_provider)
+            "{iptv_provider}_original_m3ulinks.ini".format(
+                iptv_provider=shlex.quote(iptv_provider)
+            )
         )
         cp_ini = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True

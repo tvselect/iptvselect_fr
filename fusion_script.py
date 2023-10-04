@@ -1,6 +1,7 @@
 import logging
 import subprocess
 import argparse
+import shlex
 from configparser import ConfigParser
 
 config_constants = ConfigParser()
@@ -38,7 +39,8 @@ providers_list = []
 cmd = (
     "ls -rt /home/$USER/videos_select/{title}-save/"
     "{title}_{provider_iptv_recorded}_*_original*".format(
-        title=args.title, provider_iptv_recorded=args.provider_iptv_recorded
+        title=shlex.quote(args.title),
+        provider_iptv_recorded=shlex.quote(args.provider_iptv_recorded),
     )
 )
 output_1 = subprocess.Popen(
@@ -83,7 +85,9 @@ else:
         cmd = (
             "ffprobe -i /home/$USER/videos_select/{title}-save/{video} -v quiet "
             "-show_entries format=duration -hide_banner -of default=noprint"
-            "_wrappers=1:nokey=1".format(title=args.title, video=a)
+            "_wrappers=1:nokey=1".format(
+                title=shlex.quote(args.title), video=shlex.quote(a)
+            )
         )
         duration = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -117,7 +121,8 @@ if args.provider_iptv_backup != "no_backup":
     cmd = (
         "ls -rt /home/$USER/videos_select/{title}-save/{title}_"
         "{provider_iptv_backup}_*_backup*".format(
-            title=args.title, provider_iptv_backup=args.provider_iptv_backup
+            title=shlex.quote(args.title),
+            provider_iptv_backup=shlex.quote(args.provider_iptv_backup),
         )
     )
     output_2 = subprocess.Popen(
@@ -160,7 +165,9 @@ if args.provider_iptv_backup != "no_backup":
             cmd = (
                 "ffprobe -i /home/$USER/videos_select/{title}-save/{video} -v quiet "
                 "-show_entries format=duration -hide_banner -of default=noprint"
-                "_wrappers=1:nokey=1".format(title=args.title, video=a)
+                "_wrappers=1:nokey=1".format(
+                    title=shlex.quote(args.title), video=shlex.quote(a)
+                )
             )
             duration = subprocess.Popen(
                 cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -197,7 +204,8 @@ if args.provider_iptv_backup_2 != "no_backup_2":
     cmd = (
         "ls -rt /home/$USER/videos_select/{title}-save/{title}_"
         "{provider_iptv_backup}_*_backup_2*".format(
-            title=args.title, provider_iptv_backup=args.provider_iptv_backup_2
+            title=shlex.quote(args.title),
+            provider_iptv_backup=shlex.quote(args.provider_iptv_backup_2),
         )
     )
     output_3 = subprocess.Popen(
@@ -240,7 +248,9 @@ if args.provider_iptv_backup_2 != "no_backup_2":
             cmd = (
                 "ffprobe -i /home/$USER/videos_select/{title}-save/{video} -v quiet "
                 "-show_entries format=duration -hide_banner -of default=noprint"
-                "_wrappers=1:nokey=1".format(title=args.title, video=a)
+                "_wrappers=1:nokey=1".format(
+                    title=shlex.quote(args.title), video=shlex.quote(a)
+                )
             )
             duration = subprocess.Popen(
                 cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -341,7 +351,7 @@ for n in range(len(streams_best) - 1):
         "quiet -print_format json -show_format -show_streams "
         "-hide_banner | grep -o "
         "-P '(?<=start_time\": \").*(?=\.)' | sed -n '1p'".format(
-            title=args.title, file=streams_best[n + 1][3]
+            title=shlex.quote(args.title), file=shlex.quote(streams_best[n + 1][3])
         )
     )
     start = subprocess.Popen(
@@ -360,10 +370,10 @@ for n in range(len(streams_best) - 1):
         "/home/$USER/videos_select/{title}-save/{file_1} -y -c copy -copyts -to "
         "10000000 -muxdelay 0 /home/$USER/videos_select/{title}-save/{file_2}_s.ts "
         "-loglevel quiet >> /var/tmp/split_infos.log 2>&1".format(
-            title=args.title,
+            title=shlex.quote(args.title),
             start=start,
-            file_1=streams_best[n + 1][3],
-            file_2=streams_best[n + 1][3][:-3],
+            file_1=shlex.quote(streams_best[n + 1][3]),
+            file_2=shlex.quote(streams_best[n + 1][3][:-3]),
         )
     )
     file_split = subprocess.Popen(
@@ -378,7 +388,7 @@ for stream in movies_remaster:
     cmd = (
         "cp /home/$USER/videos_select/{title}-save/{movie} /home/$USER/videos_select"
         "/{title}-save/{title}-to-watch/{rank}_{movie}".format(
-            title=args.title, movie=stream, rank=rank
+            title=shlex.quote(args.title), movie=shlex.quote(stream), rank=rank
         )
     )
     cpfiles = subprocess.Popen(
@@ -388,7 +398,7 @@ for stream in movies_remaster:
     rank += 1
 
 cmd = "touch /home/$USER/videos_select/{title}-save/{title}-to-watch/{title}_report.txt".format(
-    title=args.title
+    title=shlex.quote(args.title)
 )
 touch = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -409,7 +419,9 @@ with open(
 
 # To delete files with sizes = 0 bytes or not recorded:
 
-cmd = "du -b /home/$USER/videos_select/{title}-save/*".format(title=args.title)
+cmd = "du -b /home/$USER/videos_select/{title}-save/*".format(
+    title=shlex.quote(args.title)
+)
 
 dub = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 stdout, stderr = dub.communicate()
@@ -433,7 +445,7 @@ for movie in movies_sorted:
             todelete.append(movie[1])
 
 for movie in todelete:
-    cmd = ("rm {movie}").format(movie=movie)
+    cmd = ("rm {movie}").format(movie=shlex.quote(movie))
     rmfiles = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )

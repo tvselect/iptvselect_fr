@@ -1,6 +1,7 @@
 import re
 import subprocess
 import readline
+import shlex
 from configparser import ConfigParser
 
 from fill_ini import channels, search_url
@@ -90,7 +91,9 @@ if manual == "non" or url_provider == "":
                     "fournisseur d'IPTV? (renseignez le nom "
                     "sans l'extension .m3u): "
                 )
-                cmd = "ls iptv_providers/{m3u_file}.m3u".format(m3u_file=m3u_file)
+                cmd = "ls iptv_providers/{m3u_file}.m3u".format(
+                    m3u_file=shlex.quote(m3u_file)
+                )
                 output = subprocess.Popen(
                     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
                 )
@@ -115,7 +118,7 @@ if manual == "non" or url_provider == "":
                         "\nSi vous pensez que c'est une erreur, vous pouvez "
                         "passer en mode manuel pour inscrire l'url "
                         "correspondante. Voulez-vous passer en mode manuel? "
-                        "(Répondre par oui ou non): "
+                        "(Répondre par oui ou non): \n"
                     )
                 if manual_crypt.lower() == "non":
                     exit()
@@ -174,7 +177,9 @@ if manual == "non" or url_provider == "":
                 "lien, les enregistrements ne seront pas déclenchés.\n\n**************\n"
             )
 
-cmd = "ls iptv_providers/{iptv_provider}.ini".format(iptv_provider=iptv_provider)
+cmd = "ls iptv_providers/{iptv_provider}.ini".format(
+    iptv_provider=shlex.quote(iptv_provider)
+)
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
@@ -184,14 +189,14 @@ print(ls_result)
 
 if ls_result == "iptv_providers/" + iptv_provider + ".ini":
     cmd = "cp iptv_providers/{iptv_provider}.ini iptv_providers/{iptv_provider}.ini.bak".format(
-        iptv_provider=iptv_provider
+        iptv_provider=shlex.quote(iptv_provider)
     )
     cp = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )
 
 cmd = "cp iptv_providers/{iptv_provider}_original.ini iptv_providers/{iptv_provider}.ini".format(
-    iptv_provider=iptv_provider
+    iptv_provider=shlex.quote(iptv_provider)
 )
 cp = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 cp.wait()
@@ -220,7 +225,7 @@ except KeyError:
     exit()
 
 cmd = "cp iptv_providers/{iptv_provider}.ini iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
-    iptv_provider=iptv_provider
+    iptv_provider=shlex.quote(iptv_provider)
 )
 cp_ini = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True

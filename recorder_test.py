@@ -1,5 +1,6 @@
 import subprocess
 import time
+import shlex
 
 from configparser import ConfigParser
 
@@ -96,7 +97,7 @@ if recorder == 1:
         "-f mpegts -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 1"
         " -reconnect_at_eof -y /home/$USER/videos_select/"
         "{title}_ffmpeg.ts >> /var/tmp/infos_ffmpeg.ts 2>&1".format(
-            m3u8_link=m3u8_link, duration=duration, title=title
+            m3u8_link=shlex.quote(m3u8_link), duration=duration, title=title
         )
     )
 elif recorder == 2:
@@ -104,13 +105,16 @@ elif recorder == 2:
         "vlc -vvv {m3u8_link} --run-time {duration} --sout=file/ts"
         ":/home/$USER/videos_select/{title}_vlc.ts "
         ">> /var/tmp/infos_vlc.log 2>&1".format(
-            m3u8_link=m3u8_link, duration=duration, title=title)
+            m3u8_link=shlex.quote(m3u8_link), duration=duration, title=title
+        )
     )
 elif recorder == 3:
     cmd = (
         "mplayer {m3u8_link} -dumpstream -dumpfile "
         "/home/$USER/videos_select/{title}_mplayer.ts >> "
-        "/var/tmp/infos_mplayer.log 2>&1".format(m3u8_link=m3u8_link, title=title)
+        "/var/tmp/infos_mplayer.log 2>&1".format(
+            m3u8_link=shlex.quote(m3u8_link), title=title
+        )
     )
 else:
     cmd = (
@@ -119,7 +123,7 @@ else:
         "--retry-streams 1 --retry-max 100 --hls-duration 00:{duration} "
         "-o /home/$USER/videos_select/{title}_streamlink.ts {m3u8_link} best "
         ">> /var/tmp/infos_streamlink.log 2>&1".format(
-            m3u8_link=m3u8_link, title=title, duration=duration
+            m3u8_link=shlex.quote(m3u8_link), title=title, duration=duration
         )
     )
 
@@ -155,4 +159,3 @@ if recorder == 3:
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )
     quit()
-

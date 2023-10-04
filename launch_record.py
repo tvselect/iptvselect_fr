@@ -1,6 +1,7 @@
 import logging
 import json
 import subprocess
+import shlex
 from configparser import ConfigParser
 from datetime import datetime, timedelta
 
@@ -187,10 +188,10 @@ for video in data:
                             "{m3u8_link} {duration} {save} >> /var/tmp/record_{title}_original.log 2>&1' "
                             "| at -t {start_record} >> /var/tmp/cron_launch_record.log "
                             "2>&1".format(
-                                title=video["title"],
-                                provider=provider["iptv_provider"],
-                                recorder=provider["provider_recorder"],
-                                m3u8_link=m3u8_link,
+                                title=shlex.quote(video["title"]),
+                                provider=shlex.quote(provider["iptv_provider"]),
+                                recorder=shlex.quote(provider["provider_recorder"]),
+                                m3u8_link=shlex.quote(m3u8_link),
                                 save="original",
                                 duration=video["duration"],
                                 start_record=video_start,
@@ -288,10 +289,10 @@ for video in data:
                         "{m3u8_link} {duration} {save} >> /var/tmp/record_{title}_"
                         "backup.log 2>&1' | at -t {start_record} >> /var/tmp/cron"
                         "_launch_record.log 2>&1".format(
-                            title=video["title"],
-                            provider=provider["iptv_backup"],
-                            recorder=provider["backup_recorder"],
-                            m3u8_link=m3u8_link,
+                            title=shlex.quote(video["title"]),
+                            provider=shlex.quote(provider["iptv_backup"]),
+                            recorder=shlex.quote(provider["backup_recorder"]),
+                            m3u8_link=shlex.quote(m3u8_link),
                             save="backup",
                             duration=video["duration"],
                             start_record=video_start_backup,
@@ -369,10 +370,10 @@ for video in data:
                         "{m3u8_link} {duration} {save} >> /var/tmp/record_{title}_backup_2.log 2>&1' "
                         "| at -t {start_record} >> /var/tmp/cron_launch_record.log "
                         "2>&1".format(
-                            title=video["title"],
-                            provider=provider["iptv_backup_2"],
-                            recorder=provider["backup_2_recorder"],
-                            m3u8_link=m3u8_link,
+                            title=shlex.quote(video["title"]),
+                            provider=shlex.quote(provider["iptv_backup_2"]),
+                            recorder=shlex.quote(provider["backup_2_recorder"]),
+                            m3u8_link=shlex.quote(m3u8_link),
                             save="backup_2",
                             duration=video["duration"],
                             start_record=video_start_backup_2,
@@ -435,11 +436,11 @@ for video in data:
             "/var/tmp/fusion.log 2>&1' | at -t "
             "{start_fusion} >> /var/tmp/cron_launch_record.log "
             "2>&1".format(
-                title=video["title"],
-                provider_iptv_recorded=provider_iptv_recorded,
-                provider_iptv_backup=provider_iptv_backup,
-                provider_iptv_backup_2=provider_iptv_backup_2,
-                start_fusion=video["start_fusion"],
+                title=shlex.quote(video["title"]),
+                provider_iptv_recorded=shlex.quote(provider_iptv_recorded),
+                provider_iptv_backup=shlex.quote(provider_iptv_backup),
+                provider_iptv_backup_2=shlex.quote(provider_iptv_backup_2),
+                start_fusion=shlex.quote(video["start_fusion"]),
             )
         )
         fusion = subprocess.Popen(

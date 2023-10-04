@@ -1,6 +1,15 @@
 import subprocess
 import readline
+import shlex
+import logging
 from configparser import ConfigParser
+
+logging.basicConfig(
+    filename="/var/tmp/configparser.log",
+    format="%(asctime)s %(levelname)s: %(message)s",
+    level=logging.INFO,
+    filemode="a",
+)
 
 config_object = ConfigParser()
 
@@ -60,13 +69,17 @@ while True:
         )
 
         cmd = "ls iptv_providers/{iptv_provider}.ini".format(
-            iptv_provider=iptv_provider
+            iptv_provider=shlex.quote(iptv_provider),
         )
         output = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )
         stdout, stderr = output.communicate()
         ls_result = stdout.decode("utf-8")[:-1]
+        if stderr.decode("utf-8")[:-1] != "":
+            logging.error(
+                f"Command '{cmd}' failed with error: {stderr.decode('utf-8')}"
+            )
 
         if ls_result != "iptv_providers/" + iptv_provider + ".ini":
             print(
@@ -126,12 +139,18 @@ while True:
             backup_2_ask = False
             break
 
-        cmd = "ls iptv_providers/{iptv_backup}.ini".format(iptv_backup=iptv_backup)
+        cmd = "ls iptv_providers/{iptv_backup}.ini".format(
+            iptv_backup=shlex.quote(iptv_backup)
+        )
         output = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )
         stdout, stderr = output.communicate()
         ls_result = stdout.decode("utf-8")[:-1]
+        if stderr.decode("utf-8")[:-1] != "":
+            logging.error(
+                f"Command '{cmd}' failed with error: {stderr.decode('utf-8')}"
+            )
 
         if ls_result != "iptv_providers/" + iptv_backup + ".ini":
             print(
@@ -199,13 +218,17 @@ while True:
             break
 
         cmd = "ls iptv_providers/{iptv_backup_2}.ini".format(
-            iptv_backup_2=iptv_backup_2
+            iptv_backup_2=shlex.quote(iptv_backup_2)
         )
         output = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )
         stdout, stderr = output.communicate()
         ls_result = stdout.decode("utf-8")[:-1]
+        if stderr.decode("utf-8")[:-1] != "":
+            logging.error(
+                f"Command '{cmd}' failed with error: {stderr.decode('utf-8')}"
+            )
 
         if ls_result != "iptv_providers/" + iptv_backup_2 + ".ini":
             print(
