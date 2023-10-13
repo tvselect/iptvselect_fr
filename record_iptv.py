@@ -148,10 +148,8 @@ new_file_size = 1
 
 while date_now < end_video:
     if args.recorder == "ffmpeg":
-        cmd = (
-            "ps aux | grep -c 'ffmpeg -i {m3u8_link} -c:v copy'".format(
-                m3u8_link=args.m3u8_link,
-            )
+        cmd = "ps aux | grep -c 'ffmpeg -i {m3u8_link} -c:v copy'".format(
+            m3u8_link=args.m3u8_link,
         )
         pid_record = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -178,7 +176,7 @@ while date_now < end_video:
 
     elif args.recorder == "vlc":
         cmd = (
-            "ps aux | grep -c '\-v {m3u8_link} --sout="
+            "ps aux | grep -c '{m3u8_link} --sout="
             "file/ts:/home/.*/videos_select/{title}-save/{title}_"
             "{provider}_{record_position}_{save}.ts'".format(
                 m3u8_link=args.m3u8_link,
@@ -227,7 +225,7 @@ while date_now < end_video:
     if left_time <= 0:
         if args.recorder == "vlc":
             cmd = (
-                "ps -ef | grep '\-v {m3u8_link} --sout="
+                "ps -ef | grep '{m3u8_link} --sout="
                 "file/ts:/home/.*/videos_select/{title}-save/{title}' "
                 "| tr -s ' ' | cut -d ' ' -f2".format(
                     m3u8_link=args.m3u8_link, title=args.title
@@ -285,7 +283,6 @@ while date_now < end_video:
             time.sleep(30)
 
             start_or_kill()
-
 
         if args.recorder == "streamlink":
             cmd = (
