@@ -102,6 +102,9 @@ user = stdout.decode("utf-8")[:-1]
 
 authprog_response = "403"
 
+with open("/home/" + user + "/.netrc", "r") as file:
+    lines_origin = file.read().splitlines()
+
 while authprog_response != "200":
     with open("/home/" + user + "/.netrc", "r") as file:
         lines = file.read().splitlines()
@@ -138,7 +141,7 @@ while authprog_response != "200":
     if authprog_response != "200":
         try_again = input(
             "Le couple identifiant de connexion et mot de passe "
-            "est incorrecte\nVoulez-vous essayer de nouveau?(oui ou non): "
+            "est incorrect.\nVoulez-vous essayer de nouveau?(oui ou non): "
         )
         answer_hide = "maybe"
         if try_again.lower() == "oui":
@@ -159,6 +162,9 @@ while authprog_response != "200":
                     "Veuillez saisir de nouveau votre mot de passe sur IPTV-select.fr: "
                 )
         else:
+            with open("/home/" + user + "/.netrc", "w") as file:
+                for line in lines_origin:
+                    file.write(line + "\n")
             exit()
 
 
