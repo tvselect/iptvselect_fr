@@ -193,12 +193,12 @@ cron_launch = (
     "bash cron_launch_record.sh\n".format(user=user, minute_2=minute_2, heure=heure)
 )
 
-cron_lines = [curl if "iptv-select.fr" in cron else cron for cron in cron_lines]
+cron_lines = [curl if "iptv_box/info_progs.json" in cron else cron for cron in cron_lines]
 cron_lines = [cron_launch if "iptv_box &&" in cron else cron for cron in cron_lines]
 
 cron_lines_join = "".join(cron_lines)
 
-if "iptv-select.fr" not in cron_lines_join:
+if "iptv_box/info_progs.json" not in cron_lines_join:
     cron_lines.append(curl)
 if "cd /home/$USER/iptv_box &&" not in cron_lines_join:
     cron_lines.append(cron_launch)
