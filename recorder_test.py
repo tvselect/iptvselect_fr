@@ -4,8 +4,14 @@ import shlex
 
 from configparser import ConfigParser
 
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
 config_iptv_select = ConfigParser()
-config_iptv_select.read("iptv_select_conf.ini")
+config_iptv_select.read("/home/" + user + "/.config/iptv_box/iptv_select_conf.ini")
+
 
 cmd = "ls ~ | grep ^videos_select$"
 output = subprocess.Popen(

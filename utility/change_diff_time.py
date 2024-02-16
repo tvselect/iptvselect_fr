@@ -1,7 +1,14 @@
+import subprocess
+
 from configparser import ConfigParser
 
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
 config_constants = ConfigParser()
-config_constants.read("constants.ini")
+config_constants.read("/home/" + user + "/.config/iptv_box/constants.ini")
 
 min_time_actual = config_constants["FUSION"]["MIN_TIME"]
 safe_time_actual = config_constants["FUSION"]["SAFE_TIME"]
@@ -98,7 +105,7 @@ else:
 if answer_safe.lower() == "oui" or answer_mini.lower() == "oui":
     config_constants["FUSION"]["MIN_TIME"] = min_time
     config_constants["FUSION"]["SAFE_TIME"] = safe_time
-    with open("constants.ini", "w") as conf:
+    with open("/home/" + user + "/.config/iptv_box/constants.ini", "w") as conf:
         config_constants.write(conf)
 
     if answer_mini.lower() == "oui" and answer_safe.lower() == "non":

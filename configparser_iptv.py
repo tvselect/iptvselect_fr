@@ -11,6 +11,11 @@ logging.basicConfig(
     filemode="a",
 )
 
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
 config_object = ConfigParser()
 
 print(
@@ -308,5 +313,5 @@ while True:
         print("Vous avez configuré le nombre maximal de fournisseur d'IPTV.")
         break
 
-with open("iptv_select_conf.ini", "w") as conf:
+with open("/home/" + user + "/.config/iptv_box/iptv_select_conf.ini", "w") as conf:
     config_object.write(conf)

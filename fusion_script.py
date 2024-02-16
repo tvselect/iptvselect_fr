@@ -4,8 +4,13 @@ import argparse
 import shlex
 from configparser import ConfigParser
 
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
 config_constants = ConfigParser()
-config_constants.read("constants.ini")
+config_constants.read("/home/" + user + "/.config/iptv_box/constants.ini")
 
 MIN_TIME = int(config_constants["FUSION"]["MIN_TIME"])
 SAFE_TIME = int(config_constants["FUSION"]["SAFE_TIME"])
@@ -22,12 +27,6 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)s: %(message)s",
     level=logging.INFO,
 )
-
-
-cmd = "echo $USER"
-echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-stdout, stderr = echo.communicate()
-user = stdout.decode("utf-8")[:-1]
 
 path_video = "/home/" + user + "/videos_select/{title}-save/".format(title=args.title)
 

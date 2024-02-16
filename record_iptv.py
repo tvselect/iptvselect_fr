@@ -14,8 +14,13 @@ parser.add_argument("duration")
 parser.add_argument("save")
 args = parser.parse_args()
 
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
 config_iptv_select = ConfigParser()
-config_iptv_select.read("iptv_select_conf.ini")
+config_iptv_select.read("/home/" + user + "/.config/iptv_box/iptv_select_conf.ini")
 
 logging.basicConfig(
     filename="/var/tmp/record_{title}_{save}.log".format(
@@ -30,11 +35,6 @@ date_now_epoch = datetime.now().timestamp()
 end_video = date_now_epoch + int(args.duration)
 
 record_position = 0
-
-cmd = "echo $USER"
-echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-stdout, stderr = echo.communicate()
-user = stdout.decode("utf-8")[:-1]
 
 
 def start_or_kill():
