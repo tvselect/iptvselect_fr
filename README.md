@@ -1,4 +1,4 @@
-# iptv_box
+# iptv_box v1.0.0
 
 ## Instructions d'installation:
 
