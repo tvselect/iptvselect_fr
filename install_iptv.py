@@ -48,7 +48,7 @@ while iptv_provider == "":
 lines = []
 
 try:
-    with open("urls.txt") as file:
+    with open("/home/" + user + "/.local/share/iptv_box/urls.txt") as file:
         lines = file.read().splitlines()
 except FileNotFoundError:
     pass

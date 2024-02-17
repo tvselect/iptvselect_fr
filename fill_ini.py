@@ -220,7 +220,7 @@ if __name__ == "__main__":
         and manual.lower() not in ["oui", ""]
         and crypted != "oui"
     ):
-        with open("urls.txt", "a") as file:
+        with open("/home/" + user + "/.local/share/iptv_box/urls.txt", "a") as file:
             file.write(iptv_provider + ": " + url_provider + "\n")
 
     extension = [".avi", ".mkv", ".mp4"]
