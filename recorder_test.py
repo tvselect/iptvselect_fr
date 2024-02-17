@@ -54,7 +54,8 @@ iptv_provider = input(
 
 
 config_iptv_provider = ConfigParser()
-config_iptv_provider.read("iptv_providers/" + iptv_provider + ".ini")
+config_iptv_provider.read("/home/" + user + "/.config/iptv_box/iptv_providers/"
+                          + iptv_provider + ".ini")
 
 m3u8_link = ""
 

@@ -1,5 +1,6 @@
 import argparse
 import re
+import subprocess
 
 parser = argparse.ArgumentParser()
 parser.add_argument("iptv_provider")
@@ -9,14 +10,20 @@ args = parser.parse_args()
 
 iptv_provider = args.iptv_provider
 
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
 try:
-    with open("iptv_providers/" + iptv_provider + ".ini", "r") as ini:
+    with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider + ".ini", "r") as ini:
         first_line = ini.readline()
         lines_ini = ini.read().splitlines()
 except FileNotFoundError:
     print(
         "Le fichier {iptv_provider}.ini n'est pas présent dans le dossier "
-        "iptv_providers. Veuillez créer ce fichier en exécutant le "
+        "~/.config/iptv_box/iptv_providers. Veuillez créer ce fichier en exécutant le "
         "script install_iptv.py .".format(iptv_provider=args.iptv_provider)
     )
     exit()
@@ -94,13 +101,15 @@ answers = ["oui", "non"]
 
 if not crypt or args.encrypted == "not_encrypted":
     try:
-        with open("iptv_providers/" + iptv_provider + "_original.ini", "r") as ini:
+        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+                  + iptv_provider + "_original.ini", "r") as ini:
             first_line = ini.readline()
             lines_original = ini.read().splitlines()
     except FileNotFoundError:
         print(
-            "Le fichier {iptv_provider}_original.ini n'est pas présent dans le dossier "
-            "iptv_providers. Veuillez créer ce fichier en exécutant le "
+            "Le fichier {iptv_provider}_original.ini n'est pas présent "
+            "dans le dossier ~/.config/iptv_box/iptv_providers. "
+            "Veuillez créer ce fichier en exécutant le "
             "script fill_ini.py ou alors en le "
             "créant manuellement.".format(iptv_provider=args.iptv_provider)
         )
@@ -179,7 +188,7 @@ if not crypt or args.encrypted == "not_encrypted":
                     "\nVoulez-vous modifier l'identifiant d'une autre chaine? (répondre par oui ou non): "
                 )
 
-        with open("iptv_providers/" + iptv_provider + "_original.ini", "w") as ini:
+        with open("/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + "_original.ini", "w") as ini:
             ini.write("[CHANNELS]" + "\n")
             for line in lines_original:
                 modified = False
@@ -196,7 +205,7 @@ if not crypt or args.encrypted == "not_encrypted":
             "\nLe fichier {iptv_provider}_original.ini a été modifié. Les liens "
             "m3u n'étant pas chiffrés, il vous faut maintenant lancer le script "
             "install_iptv.py avec la commande python3 install_iptv.py \n"
-            "Ceci vous permettra de synchroniser les fichier {iptv_provider}.ini "
+            "Ceci vous permettra de synchroniser les fichiers {iptv_provider}.ini "
             "et {iptv_provider}_original_m3ulinks.ini avec le fichier "
             "{iptv_provider}_original.ini".format(iptv_provider=iptv_provider)
         )
@@ -204,26 +213,30 @@ if not crypt or args.encrypted == "not_encrypted":
 elif crypt or args.encrypted == "encrypted":
     try:
         with open(
-            "iptv_providers/" + iptv_provider + "_original_m3ulinks.ini", "r"
+            "/home/" + user + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider + "_original_m3ulinks.ini", "r"
         ) as ini:
             first_line = ini.readline()
             lines_original = ini.read().splitlines()
     except FileNotFoundError:
         print(
-            "Le fichier {iptv_provider}_original_m3ulinks.ini n'est pas présent dans le dossier "
-            "iptv_providers. Veuillez créer ce fichier en exécutant le "
+            "Le fichier {iptv_provider}_original_m3ulinks.ini n'est "
+            "pas présent dans le dossier ~/.config/iptv_box/iptv_providers. "
+            "Veuillez créer ce fichier en exécutant le "
             "script fill_ini.py .".format(iptv_provider=args.iptv_provider)
         )
         exit()
 
     try:
-        with open("iptv_providers/" + iptv_provider + ".ini", "r") as ini:
+        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+                  + iptv_provider + ".ini", "r") as ini:
             first_line = ini.readline()
             lines = ini.read().splitlines()
     except FileNotFoundError:
         print(
-            "Le fichier {iptv_provider}.ini n'est pas présent dans le dossier "
-            "iptv_providers. Veuillez créer ce fichier en exécutant le "
+            "Le fichier {iptv_provider}.ini n'est pas présent dans "
+            "le dossier ~/.config/iptv_box/iptv_providers. "
+            "Veuillez créer ce fichier en exécutant le "
             "script fill_ini.py.".format(iptv_provider=args.iptv_provider)
         )
         exit()
@@ -296,7 +309,8 @@ elif crypt or args.encrypted == "encrypted":
                 )
 
         with open(
-            "iptv_providers/" + iptv_provider + "_original_m3ulinks.ini", "w"
+            "/home/" + user + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider + "_original_m3ulinks.ini", "w"
         ) as ini:
             ini.write("[CHANNELS]" + "\n")
             for line in lines_original:
@@ -310,7 +324,8 @@ elif crypt or args.encrypted == "encrypted":
                 if not modified:
                     ini.write(line + "\n")
 
-        with open("iptv_providers/" + iptv_provider + ".ini", "w") as ini:
+        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+                  + iptv_provider + ".ini", "w") as ini:
             ini.write("[CHANNELS]" + "\n")
             for line in lines:
                 modified = False

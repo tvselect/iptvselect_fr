@@ -166,7 +166,8 @@ for video in data:
         if provider["iptv_provider"] != "" and iptv_provider_set is False:
             config_iptv_provider = ConfigParser()
             config_iptv_provider.read(
-                "iptv_providers/" + provider["iptv_provider"] + ".ini"
+                "/home/" + user + "/.config/iptv_box/iptv_providers/"
+                + provider["iptv_provider"] + ".ini"
             )
             if len(config_iptv_provider) < 2:
                 logging.warning(
