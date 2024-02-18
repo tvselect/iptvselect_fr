@@ -1,3 +1,4 @@
+import subprocess
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -7,47 +8,59 @@ parser.add_argument("backup_2", nargs="?", default="no_backup_2")
 
 args = parser.parse_args()
 
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
+
 try:
     with open(
-        "iptv_providers/{original}.ini".format(original=args.original), "r"
+        "/home/" + user + "/.config/iptv_box/iptv_providers/"
+        "{original}.ini".format(original=args.original), "r"
     ) as ini:
         first_line = ini.readline()
         lines_original = ini.read().splitlines()
 except FileNotFoundError:
     print(
         "Le fichier {original}.ini n'est pas présent dans le dossier "
-        "iptv_providers. Veuillez créer ce fichier en exécutant les "
-        "scripts fill_ini.py ou install_iptv.py ou alors en le "
+        "~/.config/iptv_box/iptv_providers. Veuillez créer ce "
+        "fichier en exécutant les scripts fill_ini.py ou "
+        "install_iptv.py ou alors en le "
         "créant manuellement.".format(original=args.original)
     )
     exit()
 
 try:
-    with open("iptv_providers/{backup}.ini".format(backup=args.backup), "r") as ini:
+    with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+              "{backup}.ini".format(backup=args.backup), "r") as ini:
         first_line = ini.readline()
         lines_backup = ini.read().splitlines()
 except FileNotFoundError:
     print(
         "Le fichier {backup}.ini n'est pas présent dans le dossier "
-        "iptv_providers. Veuillez créer ce fichier en exécutant les "
-        "scripts fill_ini.py ou install_iptv.py ou alors en le "
-        "créant manuellement.".format(backup=args.backup)
+        "~/.config/iptv_box/iptv_providers. Veuillez créer ce "
+        "fichier en exécutant les scripts fill_ini.py ou "
+        "install_iptv.py ou alors en le créant "
+        "manuellement.".format(backup=args.backup)
     )
     exit()
 
 if args.backup_2 != "no_backup_2":
     try:
         with open(
-            "iptv_providers/{backup_2}.ini".format(backup_2=args.backup_2), "r"
+            "/home/" + user + "/.config/iptv_box/iptv_providers/"
+            "{backup_2}.ini".format(backup_2=args.backup_2), "r"
         ) as ini:
             first_line = ini.readline()
             lines_backup_2 = ini.read().splitlines()
     except FileNotFoundError:
         print(
             "Le fichier {backup_2}.ini n'est pas présent dans le dossier "
-            "iptv_providers. Veuillez créer ce fichier en exécutant les "
-            "scripts fill_ini.py ou install_iptv.py ou alors en le "
-            "créant manuellement.".format(backup_2=args.backup_2)
+            "~/.config/iptv_box/iptv_providers. Veuillez créer ce "
+            "fichier en exécutant les scripts fill_ini.py ou "
+            "install_iptv.py ou alors en le créant "
+            "manuellement.".format(backup_2=args.backup_2)
         )
         exit()
 

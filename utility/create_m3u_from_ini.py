@@ -13,7 +13,7 @@ user = stdout.decode("utf-8")[:-1]
 
 try:
     with open(
-        "/home/{user}/iptv_box/iptv_providers/{provider}.ini".format(
+        "/home/{user}/.config/iptv_box/iptv_providers/{provider}.ini".format(
             user=user, provider=args.provider
         ),
         "r",
@@ -22,16 +22,17 @@ try:
         lines = ini.read().splitlines()
 except FileNotFoundError:
     print(
-        "Le fichier {provider}.ini n'est pas présent dans le dossier iptv_providers. Vous devez renseigner "
-        "comme premier argument le fichier avec l'extension .ini puis en 2ème argument celui "
-        "avec l'extension .m3u. Les noms des fichiers doivent être renseignés sans "
-        "les extensions.".format(provider=args.provider)
+        "Le fichier {provider}.ini n'est pas présent dans le dossier "
+        "~/.config/iptv_box/iptv_providers. Vous devez renseigner "
+        "comme premier argument le fichier avec l'extension .ini puis "
+        "en 2ème argument celui avec l'extension .m3u. Les noms des fichiers "
+        "doivent être renseignés sans les extensions.".format(provider=args.provider)
     )
     exit()
 
 try:
     with open(
-        "/home/{user}/iptv_box/iptv_providers/{m3u_file}.m3u".format(
+        "/home/{user}/.config/iptv_box/iptv_providers/{m3u_file}.m3u".format(
             user=user, m3u_file=args.m3u_file
         ),
         "r",
@@ -40,10 +41,11 @@ try:
         lines_m3u = ini.read().splitlines()
 except FileNotFoundError:
     print(
-        "Le fichier {m3u_file}.m3u n'est pas présent dans le dossier iptv_providers. Vous devez renseigner "
-        "comme premier argument le fichier avec l'extension .ini puis en 2ème argument celui "
-        "avec l'extension .m3u. Les noms des fichiers doivent être renseignés sans "
-        "les extensions.".format(m3u_file=args.m3u_file)
+        "Le fichier {m3u_file}.m3u n'est pas présent dans le dossier "
+        "~/.config/iptv_box/iptv_providers. Vous devez renseigner comme "
+        "premier argument le fichier avec l'extension .ini puis en 2ème "
+        "argument celui avec l'extension .m3u. Les noms des fichiers doivent "
+        "être renseignés sans les extensions.".format(m3u_file=args.m3u_file)
     )
     exit()
 

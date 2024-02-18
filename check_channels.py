@@ -5,6 +5,11 @@ import shlex
 import logging
 from datetime import datetime
 
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
 logging.basicConfig(
     filename="/var/tmp/check_channels.log",
     format="%(asctime)s %(levelname)s: %(message)s",
@@ -39,14 +44,19 @@ if args.iptv_provider[-5:] == "_junk":
 else:
     iptv_provider = args.iptv_provider
 
-cmd = "ls iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
+cmd = "ls /home/" + user + "/.config/iptv_box/iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
     iptv_provider=shlex.quote(iptv_provider)
 )
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
 stdout, stderr = output.communicate()
-provider = stdout.decode("utf-8")[15:-1]
+
+try:
+    provider = stdout.decode("utf-8").split(".config/iptv_box/")[1][15:-1]
+except IndexError:
+    provider = ""
+
 if stderr.decode("utf-8")[:-1] != "":
     logging.error(f"Command '{cmd}' failed with error: {stderr.decode('utf-8')}")
 
@@ -80,7 +90,8 @@ while provider_recorder not in answers_apps:
 
 
 with open(
-    "iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
+    "/home/" + user + "/.config/iptv_box/iptv_providers"
+    "/{iptv_provider}_original_m3ulinks.ini".format(
         iptv_provider=iptv_provider
     ),
     "r",
@@ -88,21 +99,29 @@ with open(
     first_line = ini.readline()
     lines = ini.read().splitlines()
 
-cmd = "ls iptv_providers/{iptv_provider}_junk.ini".format(
+cmd = ("ls /home/" + user + "/.config/iptv_box/"
+    "iptv_providers/{iptv_provider}_junk.ini").format(
     iptv_provider=shlex.quote(iptv_provider)
 )
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
 stdout, stderr = output.communicate()
-junk = stdout.decode("utf-8")[15:-1]
+
+try:
+    junk = stdout.decode("utf-8").split(".config/iptv_box/")[1][15:-1]
+except IndexError:
+    junk = ""
+
 if stderr.decode("utf-8")[:-1] != "":
     logging.error(f"Command '{cmd}' failed with error: {stderr.decode('utf-8')}")
 
 if junk == iptv_provider + "_junk.ini":
     cmd = (
-        "cp iptv_providers/{iptv_provider}_junk.ini "
-        "iptv_providers/{iptv_provider}_junk_last.ini".format(
+        "cp /home/{user}/.config/iptv_box/iptv_providers/"
+        "{iptv_provider}_junk.ini /home/{user}/.config/"
+        "iptv_box/iptv_providers/{iptv_provider}_junk_last.ini".format(
+            user=user,
             iptv_provider=shlex.quote(iptv_provider)
         )
     )
@@ -111,7 +130,8 @@ if junk == iptv_provider + "_junk.ini":
     )
     cp_junk.wait()
 else:
-    cmd = "touch iptv_providers/{iptv_provider}_junk.ini".format(
+    cmd = ("touch /home/" + user + "/.config/iptv_box/iptv_providers/"
+        "{iptv_provider}_junk.ini").format(
         iptv_provider=shlex.quote(iptv_provider)
     )
     output = subprocess.Popen(
@@ -123,7 +143,8 @@ check_junk = False
 
 if args.iptv_provider[-5:] == "_junk":
     with open(
-        "iptv_providers/{iptv_provider}_junk.ini".format(iptv_provider=iptv_provider),
+        "/home/" + user + "/.config/iptv_box/iptv_providers/"
+        "{iptv_provider}_junk.ini".format(iptv_provider=iptv_provider),
         "r",
     ) as ini:
         first_line = ini.readline()
@@ -286,7 +307,8 @@ for line in lines_to_check:
                     )
                 )
 
-with open("iptv_providers/" + iptv_provider + "_junk.ini", "w") as ini:
+with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+          + iptv_provider + "_junk.ini", "w") as ini:
     ini.write("[CHANNELS]" + "\n")
     for line in junkies_line:
         ini.write(line + "\n")
@@ -298,26 +320,32 @@ if len(junkies) > 0:
     for junk in junkies:
         print(junk[0])
 
-cmd = "ls iptv_providers/{iptv_provider}_junk_last.ini".format(
+cmd = ("ls /home/" + user + "/.config/iptv_box/iptv_providers/"
+        "{iptv_provider}_junk_last.ini").format(
     iptv_provider=shlex.quote(iptv_provider),
 )
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
 stdout, stderr = output.communicate()
-file_junk = stdout.decode("utf-8")[15:-1]
+
+try:
+    file_junk = stdout.decode("utf-8").split(".config/iptv_box/")[1][15:-1]
+except IndexError:
+    file_junk = ""
+
+repaired = []
 
 if file_junk == "{iptv_provider}_junk_last.ini".format(iptv_provider=iptv_provider):
     with open(
-        "iptv_providers/{iptv_provider}_junk_last.ini".format(
+        "/home/" + user + "/.config/iptv_box/iptv_providers/"
+        "{iptv_provider}_junk_last.ini".format(
             iptv_provider=iptv_provider
         ),
         "r",
     ) as ini:
         first_line = ini.readline()
         last_junks = ini.read().splitlines()
-
-    repaired = []
 
     for junk in last_junks:
         if junk not in junkies_line:
@@ -362,7 +390,8 @@ if file_junk == "{iptv_provider}_junk_last.ini".format(iptv_provider=iptv_provid
                 "{iptv_provider}.".format(iptv_provider=iptv_provider)
             )
 
-with open("iptv_providers/" + iptv_provider + ".ini", "w") as ini:
+with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+          + iptv_provider + ".ini", "w") as ini:
     ini.write("[CHANNELS]" + "\n")
     for line in lines:
         if line not in junkies_line:

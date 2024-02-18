@@ -4,28 +4,34 @@ import readline
 m3u_file = "123456"
 ls_result = "abcdef"
 
-while ls_result != "iptv_providers/" + m3u_file + ".m3u":
+cmd = "echo $USER"
+echo = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+stdout, stderr = echo.communicate()
+user = stdout.decode("utf-8")[:-1]
+
+while ls_result != "/home/" + user + "/.config/iptv_box/iptv_providers/" + m3u_file + ".m3u":
     m3u_file = input(
         "Quel est le nom du fichier m3u de votre "
         "fournisseur d'IPTV? (renseignez le nom "
         "sans l'extension .m3u): "
     )
-    cmd = "ls iptv_providers/{m3u_file}.m3u".format(m3u_file=m3u_file)
+    cmd = "ls /home/" + user + "/.config/iptv_box/iptv_providers/{m3u_file}.m3u".format(m3u_file=m3u_file)
     output = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )
     stdout, stderr = output.communicate()
     ls_result = stdout.decode("utf-8")[:-1]
-    if ls_result != "iptv_providers/" + m3u_file + ".m3u":
+    if ls_result != "/home/" + user + "/.config/iptv_box/iptv_providers/" + m3u_file + ".m3u":
         print(
             "Le fichier {m3u_file}.m3u n'est pas présent dans votre"
-            " dossier iptv_providers. Insérer le fichier m3u de "
-            " votre fournisseur d'IPTV ou modifier le nom du fichier "
-            "m3u pour qu'il corresponde à celui du fichier présent "
-            "dans le dossier.\n".format(m3u_file=m3u_file)
+            " dossier ~/.config/iptv_box/iptv_providers. Insérer "
+            "le fichier m3u de votre fournisseur d'IPTV ou modifier "
+            "le nom du fichier m3u pour qu'il corresponde à celui "
+            "du fichier présent dans le dossier.\n".format(m3u_file=m3u_file)
         )
 
-cmd = "du -h iptv_providers/{m3u_file}.m3u | cut -f1".format(m3u_file=m3u_file)
+cmd = ("du -h /home/" + user + "/.config/iptv_box/iptv_"
+       "providers/{m3u_file}.m3u | cut -f1").format(m3u_file=m3u_file)
 duh = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 stdout, stderr = duh.communicate()
 file_size = stdout.decode("utf-8")[:-1]
@@ -62,7 +68,8 @@ while answer.lower() not in answers:
 extensions = [".avi", ".mkv", ".mp4"]
 
 if answer.lower() == "oui":
-    with open("iptv_providers/" + m3u_file + ".m3u", "r") as m3u:
+    with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+              + m3u_file + ".m3u", "r") as m3u:
         m3u_lines = [line for line in m3u]
         lines = []
 
@@ -76,11 +83,13 @@ if answer.lower() == "oui":
 else:
     exit()
 
-with open("iptv_providers/" + m3u_file + ".m3u", "w") as m3u:
+with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
+          + m3u_file + ".m3u", "w") as m3u:
     for line in lines:
         m3u.write(line)
 
-cmd = "du -h iptv_providers/{m3u_file}.m3u | cut -f1".format(m3u_file=m3u_file)
+cmd = ("du -h /home/" + user + "/.config/iptv_box/iptv_"
+       "providers/{m3u_file}.m3u | cut -f1").format(m3u_file=m3u_file)
 duh = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 stdout, stderr = duh.communicate()
 file_size = stdout.decode("utf-8")[:-1]
