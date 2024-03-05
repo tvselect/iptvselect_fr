@@ -257,12 +257,14 @@ while date_now < end_video:
 
     if int(proc_count) < 3 or (args.recorder == "vlc" and file_size == new_file_size):
         logging.info("!!!! New file !!!!!!!")
+        logging.info("file_size = " + str(file_size) + " , new_file_size = "
+                    + str(new_file_size) + " , proc_count = " + str(proc_count))
 
         record_position += 1
 
         if args.recorder == "ffmpeg":
             cmd = (
-                "ffmpeg -i {m3u8_link} -c:v copy -c:a copy -t {left_time} "
+                "ffmpeg -i '{m3u8_link}' -c:v copy -c:a copy -t {left_time} "
                 "-f mpegts -reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 1"
                 " -reconnect_at_eof -y /home/$USER/videos_select/"
                 "{title}-save/{title}_{provider}_{record_position}_{save}.ts"
@@ -330,7 +332,7 @@ while date_now < end_video:
             )
 
             cmd = (
-                "cvlc -v --run-time={left_time} {m3u8_link} --sout=file/ts:/home/$USER/videos_select"
+                "cvlc -v --run-time={left_time} '{m3u8_link}' --sout=file/ts:/home/$USER/videos_select"
                 "/{title}-save/{title}_{provider}"
                 "_{record_position}_{save}.ts "
                 ">> /var/tmp/infos_{title}_{provider}"

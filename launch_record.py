@@ -2,6 +2,7 @@ import logging
 import json
 import subprocess
 import shlex
+import re
 from configparser import ConfigParser
 from datetime import datetime, timedelta
 
@@ -187,13 +188,13 @@ for video in data:
                 time_last = datetime.now()
             if time_last < video_start_datetime:
                 try:
-                    m3u8_link = config_iptv_provider["CHANNELS"][
+                    m3u8_link = re.escape(config_iptv_provider["CHANNELS"][
                         video["channel"].lower()
-                    ]
+                    ])
                     if m3u8_link != "":
                         cmd = (
                             "echo 'python3 record_iptv.py {title} {provider} {recorder} "
-                            "{m3u8_link} {duration} {save} >> /var/tmp/record_{title}_original.log 2>&1' "
+                            "\'{m3u8_link}\' {duration} {save} >> /var/tmp/record_{title}_original.log 2>&1' "
                             "| at -t {start_record} >> /var/tmp/cron_launch_record.log "
                             "2>&1".format(
                                 title=shlex.quote(video["title"]),
@@ -290,11 +291,11 @@ for video in data:
                     video_start_backup = video_start[:-2] + str(
                         int(video_start[-2:]) - 1
                     )
-                m3u8_link = config_iptv_backup["CHANNELS"][video["channel"].lower()]
+                m3u8_link = re.escape(config_iptv_backup["CHANNELS"][video["channel"].lower()])
                 if m3u8_link != "":
                     cmd = (
                         "echo 'python3 record_iptv.py {title} {provider} {recorder} "
-                        "{m3u8_link} {duration} {save} >> /var/tmp/record_{title}_"
+                        "\'{m3u8_link}\' {duration} {save} >> /var/tmp/record_{title}_"
                         "backup.log 2>&1' | at -t {start_record} >> /var/tmp/cron"
                         "_launch_record.log 2>&1".format(
                             title=shlex.quote(video["title"]),
@@ -371,11 +372,11 @@ for video in data:
                     video_start_backup_2 = video_start[:-2] + str(
                         int(video_start[-2:]) - 2
                     )
-                m3u8_link = config_iptv_backup_2["CHANNELS"][video["channel"].lower()]
+                m3u8_link = re.escape(config_iptv_backup_2["CHANNELS"][video["channel"].lower()])
                 if m3u8_link != "":
                     cmd = (
                         "echo 'python3 record_iptv.py {title} {provider} {recorder} "
-                        "{m3u8_link} {duration} {save} >> /var/tmp/record_{title}_backup_2.log 2>&1' "
+                        "\'{m3u8_link}\' {duration} {save} >> /var/tmp/record_{title}_backup_2.log 2>&1' "
                         "| at -t {start_record} >> /var/tmp/cron_launch_record.log "
                         "2>&1".format(
                             title=shlex.quote(video["title"]),
