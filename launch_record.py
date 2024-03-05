@@ -72,11 +72,13 @@ for key in config_iptv_select.keys():
                 providers[iptv_prov] = Provider(iptv_prov, {})
 
 
-with open("info_progs.json", "r") as jsonfile:
+with open("/home/" + user + "/.local/share/iptv_"
+          "box/info_progs.json", "r") as jsonfile:
     data = json.load(jsonfile)
 
 try:
-    with open("info_progs_last.json", "r") as jsonfile:
+    with open("/home/" + user + "/.local/share/iptv"
+              "_box/info_progs_last.json", "r") as jsonfile:
         data_last = json.load(jsonfile)
 except FileNotFoundError:
     data_last = []
@@ -454,7 +456,8 @@ for video in data:
         )
 
 
-cmd = "cp info_progs.json info_progs_last.json"
+cmd = ("cp ~/.local/share/iptv_box/info_progs.json "
+       "~/.local/share/iptv_box/info_progs_last.json")
 cp_info = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )

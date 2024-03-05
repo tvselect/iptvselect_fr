@@ -54,6 +54,15 @@ if ls_directory == "":
     directory.wait()
     print("Le dossier videos_select a été créé dans votre dossier home.\n")
 
+cmd = "mkdir -p ~/.local/share/iptv_box ~/.config/iptv_box"
+directories = subprocess.Popen(
+    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+)
+directories.wait()
+print("Les dossiers ~/.config/iptv_box et ~/.local/share/iptv_box ont "
+      "été créés.\n")
+
+
 print("Configuration des tâches cron du programme IPTV-select:\n")
 
 cmd = 'curl -I https://iptv-select.fr | grep HTTP | tail -1 | cut -d " " -f 2'
@@ -185,8 +194,8 @@ curl = (
     "{minute} {heure} * * * export USER='{user}' && "
     "curl -H 'Accept: application/json;"
     "indent=4' -n "
-    "https://www.iptv-select.fr/api/v1/prog > /home/$USER/iptv_box/info_"
-    "progs.json 2>> /var/tmp/cron_curl.log\n".format(
+    "https://www.iptv-select.fr/api/v1/prog > /home/$USER/.local/share"
+    "/iptv_box/info_progs.json 2>> /var/tmp/cron_curl.log\n".format(
         user=user,
         minute=minute,
         heure=heure,
