@@ -54,14 +54,22 @@ if ls_directory == "":
     directory.wait()
     print("Le dossier videos_select a été créé dans votre dossier home.\n")
 
-cmd = "mkdir -p ~/.local/share/iptv_box ~/.config/iptv_box"
+cmd = "mkdir -p ~/.local/share/iptv_box ~/.config/iptv_box/iptv_providers"
 directories = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
 directories.wait()
-print("Les dossiers ~/.config/iptv_box et ~/.local/share/iptv_box ont "
-      "été créés.\n")
+print("Les dossiers ~/.config/iptv_box/iptv_providers et "
+      "~/.local/share/iptv_box ont été créés.\n")
 
+cmd = ("cp ~/iptv_box/iptv_providers/freeboxtv* "
+       "~/.config/iptv_box/iptv_providers")
+cp_free = subprocess.Popen(
+    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+)
+cp_free.wait()
+print("Les fichiers freeboxtv pour les abonnés Free ont été copiés "
+      "dans le dossier ~/.config/iptv_box/iptv_providers .\n")
 
 print("Configuration des tâches cron du programme IPTV-select:\n")
 
