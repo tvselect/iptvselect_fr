@@ -73,7 +73,7 @@ while True:
             "\n".format(record_ranking=record_ranking[provider_rank])
         )
 
-        cmd = "ls iptv_providers/{iptv_provider}.ini".format(
+        cmd = "cd ~/.config/iptv_box && ls iptv_providers/{iptv_provider}.ini".format(
             iptv_provider=shlex.quote(iptv_provider),
         )
         output = subprocess.Popen(
@@ -144,7 +144,7 @@ while True:
             backup_2_ask = False
             break
 
-        cmd = "ls iptv_providers/{iptv_backup}.ini".format(
+        cmd = "cd ~/.config/iptv_box && ls iptv_providers/{iptv_backup}.ini".format(
             iptv_backup=shlex.quote(iptv_backup)
         )
         output = subprocess.Popen(
@@ -222,7 +222,7 @@ while True:
             backup_2_recorder_string = ""
             break
 
-        cmd = "ls iptv_providers/{iptv_backup_2}.ini".format(
+        cmd = "cd ~/.config/iptv_box && ls iptv_providers/{iptv_backup_2}.ini".format(
             iptv_backup_2=shlex.quote(iptv_backup_2)
         )
         output = subprocess.Popen(
