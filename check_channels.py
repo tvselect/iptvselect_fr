@@ -44,8 +44,12 @@ if args.iptv_provider[-5:] == "_junk":
 else:
     iptv_provider = args.iptv_provider
 
-cmd = "ls /home/" + user + "/.config/iptv_box/iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
-    iptv_provider=shlex.quote(iptv_provider)
+cmd = (
+    "ls /home/"
+    + user
+    + "/.config/iptv_box/iptv_providers/{iptv_provider}_original_m3ulinks.ini".format(
+        iptv_provider=shlex.quote(iptv_provider)
+    )
 )
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -91,18 +95,15 @@ while provider_recorder not in answers_apps:
 
 with open(
     "/home/" + user + "/.config/iptv_box/iptv_providers"
-    "/{iptv_provider}_original_m3ulinks.ini".format(
-        iptv_provider=iptv_provider
-    ),
+    "/{iptv_provider}_original_m3ulinks.ini".format(iptv_provider=iptv_provider),
     "r",
 ) as ini:
     first_line = ini.readline()
     lines = ini.read().splitlines()
 
-cmd = ("ls /home/" + user + "/.config/iptv_box/"
-    "iptv_providers/{iptv_provider}_junk.ini").format(
-    iptv_provider=shlex.quote(iptv_provider)
-)
+cmd = (
+    "ls /home/" + user + "/.config/iptv_box/" "iptv_providers/{iptv_provider}_junk.ini"
+).format(iptv_provider=shlex.quote(iptv_provider))
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
@@ -121,8 +122,7 @@ if junk == iptv_provider + "_junk.ini":
         "cp /home/{user}/.config/iptv_box/iptv_providers/"
         "{iptv_provider}_junk.ini /home/{user}/.config/"
         "iptv_box/iptv_providers/{iptv_provider}_junk_last.ini".format(
-            user=user,
-            iptv_provider=shlex.quote(iptv_provider)
+            user=user, iptv_provider=shlex.quote(iptv_provider)
         )
     )
     cp_junk = subprocess.Popen(
@@ -130,10 +130,10 @@ if junk == iptv_provider + "_junk.ini":
     )
     cp_junk.wait()
 else:
-    cmd = ("touch /home/" + user + "/.config/iptv_box/iptv_providers/"
-        "{iptv_provider}_junk.ini").format(
-        iptv_provider=shlex.quote(iptv_provider)
-    )
+    cmd = (
+        "touch /home/" + user + "/.config/iptv_box/iptv_providers/"
+        "{iptv_provider}_junk.ini"
+    ).format(iptv_provider=shlex.quote(iptv_provider))
     output = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )
@@ -307,8 +307,10 @@ for line in lines_to_check:
                     )
                 )
 
-with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-          + iptv_provider + "_junk.ini", "w") as ini:
+with open(
+    "/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + "_junk.ini",
+    "w",
+) as ini:
     ini.write("[CHANNELS]" + "\n")
     for line in junkies_line:
         ini.write(line + "\n")
@@ -320,8 +322,10 @@ if len(junkies) > 0:
     for junk in junkies:
         print(junk[0])
 
-cmd = ("ls /home/" + user + "/.config/iptv_box/iptv_providers/"
-        "{iptv_provider}_junk_last.ini").format(
+cmd = (
+    "ls /home/" + user + "/.config/iptv_box/iptv_providers/"
+    "{iptv_provider}_junk_last.ini"
+).format(
     iptv_provider=shlex.quote(iptv_provider),
 )
 output = subprocess.Popen(
@@ -339,9 +343,7 @@ repaired = []
 if file_junk == "{iptv_provider}_junk_last.ini".format(iptv_provider=iptv_provider):
     with open(
         "/home/" + user + "/.config/iptv_box/iptv_providers/"
-        "{iptv_provider}_junk_last.ini".format(
-            iptv_provider=iptv_provider
-        ),
+        "{iptv_provider}_junk_last.ini".format(iptv_provider=iptv_provider),
         "r",
     ) as ini:
         first_line = ini.readline()
@@ -390,8 +392,9 @@ if file_junk == "{iptv_provider}_junk_last.ini".format(iptv_provider=iptv_provid
                 "{iptv_provider}.".format(iptv_provider=iptv_provider)
             )
 
-with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-          + iptv_provider + ".ini", "w") as ini:
+with open(
+    "/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + ".ini", "w"
+) as ini:
     ini.write("[CHANNELS]" + "\n")
     for line in lines:
         if line not in junkies_line:

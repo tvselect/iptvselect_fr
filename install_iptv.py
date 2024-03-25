@@ -90,15 +90,16 @@ if manual == "non" or url_provider == "":
         if automate.lower() == "oui" or automate.lower() == "":
             m3u_file = "123456"
             ls_result = "abcdef"
-            while ls_result != ("/home/" + user + "/.config/iptv_box/"
-                "iptv_providers/" + m3u_file + ".m3u"):
+            while ls_result != (
+                "/home/" + user + "/.config/iptv_box/"
+                "iptv_providers/" + m3u_file + ".m3u"
+            ):
                 m3u_file = input(
                     "Quel est le nom du fichier m3u de votre "
                     "fournisseur d'IPTV? (renseignez le nom "
                     "sans l'extension .m3u): "
                 )
-                cmd = ("ls ~/.config/iptv_box/iptv_providers/"
-                    "{m3u_file}.m3u").format(
+                cmd = ("ls ~/.config/iptv_box/iptv_providers/" "{m3u_file}.m3u").format(
                     m3u_file=shlex.quote(m3u_file)
                 )
                 output = subprocess.Popen(
@@ -106,8 +107,10 @@ if manual == "non" or url_provider == "":
                 )
                 stdout, stderr = output.communicate()
                 ls_result = stdout.decode("utf-8")[:-1]
-                if ls_result != ("/home/" + user + "/.config/iptv_box/iptv"
-                    "_providers/" + m3u_file + ".m3u"):
+                if ls_result != (
+                    "/home/" + user + "/.config/iptv_box/iptv"
+                    "_providers/" + m3u_file + ".m3u"
+                ):
                     print(
                         "Le fichier {m3u_file}.m3u n'est pas présent dans votre"
                         " dossier iptv_providers. Insérer le fichier m3u de "
@@ -185,10 +188,9 @@ if manual == "non" or url_provider == "":
                 "lien, les enregistrements ne seront pas déclenchés.\n\n**************\n"
             )
 
-cmd = ("ls /home/" + user + "/.config/iptv_box/iptv_providers"
-    "/{iptv_provider}.ini").format(
-    iptv_provider=shlex.quote(iptv_provider)
-)
+cmd = (
+    "ls /home/" + user + "/.config/iptv_box/iptv_providers" "/{iptv_provider}.ini"
+).format(iptv_provider=shlex.quote(iptv_provider))
 output = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
@@ -196,26 +198,29 @@ stdout, stderr = output.communicate()
 ls_result = stdout.decode("ascii")[:-1]
 print(ls_result)
 
-if ls_result == ("/home/" + user + "/.config/iptv_box/iptv_providers/"
-    + iptv_provider + ".ini"):
-    cmd = ("cp /home/" + user + "/.config/iptv_box/iptv_providers/"
+if ls_result == (
+    "/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + ".ini"
+):
+    cmd = (
+        "cp /home/" + user + "/.config/iptv_box/iptv_providers/"
         "{iptv_provider}.ini /home/" + user + "/.config/iptv_box/iptv_"
-        "providers/{iptv_provider}.ini.bak").format(
-        iptv_provider=shlex.quote(iptv_provider)
-    )
+        "providers/{iptv_provider}.ini.bak"
+    ).format(iptv_provider=shlex.quote(iptv_provider))
     cp = subprocess.Popen(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
     )
 
-cmd = ("cp /home/" + user + "/.config/iptv_box/iptv_providers"
+cmd = (
+    "cp /home/" + user + "/.config/iptv_box/iptv_providers"
     "/{iptv_provider}_original.ini /home/" + user + "/.config"
-    "/iptv_box/iptv_providers/{iptv_provider}.ini").format(
-    iptv_provider=shlex.quote(iptv_provider)
-)
+    "/iptv_box/iptv_providers/{iptv_provider}.ini"
+).format(iptv_provider=shlex.quote(iptv_provider))
 cp = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 cp.wait()
 
-config_file = "/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + ".ini"
+config_file = (
+    "/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + ".ini"
+)
 config_object = ConfigParser()
 config_object.read(config_file)
 
@@ -238,11 +243,11 @@ except KeyError:
     )
     exit()
 
-cmd = ("cp /home/" + user + "/.config/iptv_box/iptv_providers"
+cmd = (
+    "cp /home/" + user + "/.config/iptv_box/iptv_providers"
     "/{iptv_provider}.ini /home/" + user + "/.config/iptv_box"
-    "/iptv_providers/{iptv_provider}_original_m3ulinks.ini").format(
-    iptv_provider=shlex.quote(iptv_provider)
-)
+    "/iptv_providers/{iptv_provider}_original_m3ulinks.ini"
+).format(iptv_provider=shlex.quote(iptv_provider))
 cp_ini = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )

@@ -17,7 +17,8 @@ user = stdout.decode("utf-8")[:-1]
 try:
     with open(
         "/home/" + user + "/.config/iptv_box/iptv_providers/"
-        "{original}.ini".format(original=args.original), "r"
+        "{original}.ini".format(original=args.original),
+        "r",
     ) as ini:
         first_line = ini.readline()
         lines_original = ini.read().splitlines()
@@ -32,8 +33,11 @@ except FileNotFoundError:
     exit()
 
 try:
-    with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-              "{backup}.ini".format(backup=args.backup), "r") as ini:
+    with open(
+        "/home/" + user + "/.config/iptv_box/iptv_providers/"
+        "{backup}.ini".format(backup=args.backup),
+        "r",
+    ) as ini:
         first_line = ini.readline()
         lines_backup = ini.read().splitlines()
 except FileNotFoundError:
@@ -50,7 +54,8 @@ if args.backup_2 != "no_backup_2":
     try:
         with open(
             "/home/" + user + "/.config/iptv_box/iptv_providers/"
-            "{backup_2}.ini".format(backup_2=args.backup_2), "r"
+            "{backup_2}.ini".format(backup_2=args.backup_2),
+            "r",
         ) as ini:
             first_line = ini.readline()
             lines_backup_2 = ini.read().splitlines()

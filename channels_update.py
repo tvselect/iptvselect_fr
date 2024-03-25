@@ -16,8 +16,10 @@ stdout, stderr = echo.communicate()
 user = stdout.decode("utf-8")[:-1]
 
 try:
-    with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-            + iptv_provider + ".ini", "r") as ini:
+    with open(
+        "/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + ".ini",
+        "r",
+    ) as ini:
         first_line = ini.readline()
         lines_ini = ini.read().splitlines()
 except FileNotFoundError:
@@ -101,8 +103,14 @@ answers = ["oui", "non"]
 
 if not crypt or args.encrypted == "not_encrypted":
     try:
-        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-                  + iptv_provider + "_original.ini", "r") as ini:
+        with open(
+            "/home/"
+            + user
+            + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider
+            + "_original.ini",
+            "r",
+        ) as ini:
             first_line = ini.readline()
             lines_original = ini.read().splitlines()
     except FileNotFoundError:
@@ -188,7 +196,14 @@ if not crypt or args.encrypted == "not_encrypted":
                     "\nVoulez-vous modifier l'identifiant d'une autre chaine? (répondre par oui ou non): "
                 )
 
-        with open("/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + "_original.ini", "w") as ini:
+        with open(
+            "/home/"
+            + user
+            + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider
+            + "_original.ini",
+            "w",
+        ) as ini:
             ini.write("[CHANNELS]" + "\n")
             for line in lines_original:
                 modified = False
@@ -213,8 +228,12 @@ if not crypt or args.encrypted == "not_encrypted":
 elif crypt or args.encrypted == "encrypted":
     try:
         with open(
-            "/home/" + user + "/.config/iptv_box/iptv_providers/"
-            + iptv_provider + "_original_m3ulinks.ini", "r"
+            "/home/"
+            + user
+            + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider
+            + "_original_m3ulinks.ini",
+            "r",
         ) as ini:
             first_line = ini.readline()
             lines_original = ini.read().splitlines()
@@ -228,8 +247,14 @@ elif crypt or args.encrypted == "encrypted":
         exit()
 
     try:
-        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-                  + iptv_provider + ".ini", "r") as ini:
+        with open(
+            "/home/"
+            + user
+            + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider
+            + ".ini",
+            "r",
+        ) as ini:
             first_line = ini.readline()
             lines = ini.read().splitlines()
     except FileNotFoundError:
@@ -309,8 +334,12 @@ elif crypt or args.encrypted == "encrypted":
                 )
 
         with open(
-            "/home/" + user + "/.config/iptv_box/iptv_providers/"
-            + iptv_provider + "_original_m3ulinks.ini", "w"
+            "/home/"
+            + user
+            + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider
+            + "_original_m3ulinks.ini",
+            "w",
         ) as ini:
             ini.write("[CHANNELS]" + "\n")
             for line in lines_original:
@@ -324,8 +353,14 @@ elif crypt or args.encrypted == "encrypted":
                 if not modified:
                     ini.write(line + "\n")
 
-        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-                  + iptv_provider + ".ini", "w") as ini:
+        with open(
+            "/home/"
+            + user
+            + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider
+            + ".ini",
+            "w",
+        ) as ini:
             ini.write("[CHANNELS]" + "\n")
             for line in lines:
                 modified = False

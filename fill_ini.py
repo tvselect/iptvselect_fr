@@ -35,8 +35,10 @@ def search_url(channels, m3u_file):
     crypted = 0
 
     for chan in channels:
-        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-                  + m3u_file + ".m3u", "r") as m3u:
+        with open(
+            "/home/" + user + "/.config/iptv_box/iptv_providers/" + m3u_file + ".m3u",
+            "r",
+        ) as m3u:
             for link in m3u:
                 if match is True:
                     m3u_link = link
@@ -109,7 +111,8 @@ if __name__ == "__main__":
 
     cmd = (
         "cp iptv_providers/iptv_select_channels.ini /home/"
-        + user + "/.config/iptv_box/iptv_providers/"
+        + user
+        + "/.config/iptv_box/iptv_providers/"
         "{provider}.ini".format(provider=shlex.quote(iptv_provider))
     )
     cp_ini = subprocess.Popen(
@@ -117,36 +120,43 @@ if __name__ == "__main__":
     )
     cp_ini.wait()
 
-    with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-              + iptv_provider + ".ini", "r") as ini:
+    with open(
+        "/home/" + user + "/.config/iptv_box/iptv_providers/" + iptv_provider + ".ini",
+        "r",
+    ) as ini:
         first_line = ini.readline()
         lines = ini.read().splitlines()
 
     m3u_file = "123456"
     ls_result = "abcdef"
 
-    while ls_result != ("/home/" + user + "/.config/iptv_box"
-        "/iptv_providers/" + m3u_file + ".m3u"):
+    while ls_result != (
+        "/home/" + user + "/.config/iptv_box" "/iptv_providers/" + m3u_file + ".m3u"
+    ):
         m3u_file = input(
             "Quel est le nom du fichier m3u de votre "
             "fournisseur d'IPTV? (renseignez le nom "
             "sans l'extension .m3u): "
         )
-        cmd = ("ls /home/" + user + "/.config/iptv_box/iptv_"
-            "providers/{m3u_file}.m3u").format(m3u_file=shlex.quote(m3u_file))
+        cmd = (
+            "ls /home/" + user + "/.config/iptv_box/iptv_" "providers/{m3u_file}.m3u"
+        ).format(m3u_file=shlex.quote(m3u_file))
         output = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )
         stdout, stderr = output.communicate()
         ls_result = stdout.decode("utf-8")[:-1]
-        if ls_result != ("/home/" + user + "/.config/iptv_box/iptv"
-            "_providers/" + m3u_file + ".m3u"):
+        if ls_result != (
+            "/home/" + user + "/.config/iptv_box/iptv" "_providers/" + m3u_file + ".m3u"
+        ):
             print(
                 "Le fichier {m3u_file}.m3u n'est pas présent dans votre"
                 " dossier ~/.config/iptv_box/iptv_providers. "
                 "Insérer le fichier m3u de votre fournisseur d'IPTV "
                 "ou modifier le nom du fichier m3u pour qu'il corresponde "
-                "à celui du fichier présent dans le dossier.\n".format(m3u_file=m3u_file)
+                "à celui du fichier présent dans le dossier.\n".format(
+                    m3u_file=m3u_file
+                )
             )
 
     match = False
@@ -305,8 +315,10 @@ if __name__ == "__main__":
         chan_low = line[:-3].lower()
         if chan_low[:3] in chans_spec:
             chan_low = chan_low[:3]
-        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-                  + m3u_file + ".m3u", "r") as m3u:
+        with open(
+            "/home/" + user + "/.config/iptv_box/iptv_providers/" + m3u_file + ".m3u",
+            "r",
+        ) as m3u:
             links = []
             for link in m3u:
                 if match is True and link[-5:-1] not in extension:
@@ -418,8 +430,14 @@ if __name__ == "__main__":
             selected.append(line + "\n")
 
     if crypted.lower() == "oui":
-        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-                  + iptv_provider + ".ini", "w") as ini:
+        with open(
+            "/home/"
+            + user
+            + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider
+            + ".ini",
+            "w",
+        ) as ini:
             ini.write("[CHANNELS]" + "\n")
             for line in selected:
                 ini.write(line)
@@ -436,8 +454,14 @@ if __name__ == "__main__":
         cp_ini.wait()
 
     else:
-        with open("/home/" + user + "/.config/iptv_box/iptv_providers/"
-                  + iptv_provider + "_original.ini", "w") as ini:
+        with open(
+            "/home/"
+            + user
+            + "/.config/iptv_box/iptv_providers/"
+            + iptv_provider
+            + "_original.ini",
+            "w",
+        ) as ini:
             ini.write("[CHANNELS]" + "\n")
             for line in selected:
                 ini.write(line)

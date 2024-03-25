@@ -257,8 +257,14 @@ while date_now < end_video:
 
     if int(proc_count) < 3 or (args.recorder == "vlc" and file_size == new_file_size):
         logging.info("!!!! New file !!!!!!!")
-        logging.info("file_size = " + str(file_size) + " , new_file_size = "
-                    + str(new_file_size) + " , proc_count = " + str(proc_count))
+        logging.info(
+            "file_size = "
+            + str(file_size)
+            + " , new_file_size = "
+            + str(new_file_size)
+            + " , proc_count = "
+            + str(proc_count)
+        )
 
         record_position += 1
 

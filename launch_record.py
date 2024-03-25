@@ -73,13 +73,15 @@ for key in config_iptv_select.keys():
                 providers[iptv_prov] = Provider(iptv_prov, {})
 
 
-with open("/home/" + user + "/.local/share/iptv_"
-          "box/info_progs.json", "r") as jsonfile:
+with open(
+    "/home/" + user + "/.local/share/iptv_" "box/info_progs.json", "r"
+) as jsonfile:
     data = json.load(jsonfile)
 
 try:
-    with open("/home/" + user + "/.local/share/iptv"
-              "_box/info_progs_last.json", "r") as jsonfile:
+    with open(
+        "/home/" + user + "/.local/share/iptv" "_box/info_progs_last.json", "r"
+    ) as jsonfile:
         data_last = json.load(jsonfile)
 except FileNotFoundError:
     data_last = []
@@ -169,8 +171,11 @@ for video in data:
         if provider["iptv_provider"] != "" and iptv_provider_set is False:
             config_iptv_provider = ConfigParser()
             config_iptv_provider.read(
-                "/home/" + user + "/.config/iptv_box/iptv_providers/"
-                + provider["iptv_provider"] + ".ini"
+                "/home/"
+                + user
+                + "/.config/iptv_box/iptv_providers/"
+                + provider["iptv_provider"]
+                + ".ini"
             )
             if len(config_iptv_provider) < 2:
                 logging.warning(
@@ -188,13 +193,13 @@ for video in data:
                 time_last = datetime.now()
             if time_last < video_start_datetime:
                 try:
-                    m3u8_link = re.escape(config_iptv_provider["CHANNELS"][
-                        video["channel"].lower()
-                    ])
+                    m3u8_link = re.escape(
+                        config_iptv_provider["CHANNELS"][video["channel"].lower()]
+                    )
                     if m3u8_link != "":
                         cmd = (
                             "echo 'python3 record_iptv.py {title} {provider} {recorder} "
-                            "\'{m3u8_link}\' {duration} {save} >> /var/tmp/record_{title}_original.log 2>&1' "
+                            "'{m3u8_link}' {duration} {save} >> /var/tmp/record_{title}_original.log 2>&1' "
                             "| at -t {start_record} >> /var/tmp/cron_launch_record.log "
                             "2>&1".format(
                                 title=shlex.quote(video["title"]),
@@ -291,11 +296,13 @@ for video in data:
                     video_start_backup = video_start[:-2] + str(
                         int(video_start[-2:]) - 1
                     )
-                m3u8_link = re.escape(config_iptv_backup["CHANNELS"][video["channel"].lower()])
+                m3u8_link = re.escape(
+                    config_iptv_backup["CHANNELS"][video["channel"].lower()]
+                )
                 if m3u8_link != "":
                     cmd = (
                         "echo 'python3 record_iptv.py {title} {provider} {recorder} "
-                        "\'{m3u8_link}\' {duration} {save} >> /var/tmp/record_{title}_"
+                        "'{m3u8_link}' {duration} {save} >> /var/tmp/record_{title}_"
                         "backup.log 2>&1' | at -t {start_record} >> /var/tmp/cron"
                         "_launch_record.log 2>&1".format(
                             title=shlex.quote(video["title"]),
@@ -372,11 +379,13 @@ for video in data:
                     video_start_backup_2 = video_start[:-2] + str(
                         int(video_start[-2:]) - 2
                     )
-                m3u8_link = re.escape(config_iptv_backup_2["CHANNELS"][video["channel"].lower()])
+                m3u8_link = re.escape(
+                    config_iptv_backup_2["CHANNELS"][video["channel"].lower()]
+                )
                 if m3u8_link != "":
                     cmd = (
                         "echo 'python3 record_iptv.py {title} {provider} {recorder} "
-                        "\'{m3u8_link}\' {duration} {save} >> /var/tmp/record_{title}_backup_2.log 2>&1' "
+                        "'{m3u8_link}' {duration} {save} >> /var/tmp/record_{title}_backup_2.log 2>&1' "
                         "| at -t {start_record} >> /var/tmp/cron_launch_record.log "
                         "2>&1".format(
                             title=shlex.quote(video["title"]),
@@ -457,8 +466,10 @@ for video in data:
         )
 
 
-cmd = ("cp ~/.local/share/iptv_box/info_progs.json "
-       "~/.local/share/iptv_box/info_progs_last.json")
+cmd = (
+    "cp ~/.local/share/iptv_box/info_progs.json "
+    "~/.local/share/iptv_box/info_progs_last.json"
+)
 cp_info = subprocess.Popen(
     cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
 )
